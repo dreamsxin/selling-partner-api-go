@@ -1,0 +1,1125 @@
+openapi: 3.0.1
+info:
+  contact:
+    name: Selling Partner API Developer Support
+    url: https://sellercentral.amazon.com/gp/mws/contactus.html
+  description: The Selling Partner API for FBA Inventory lets you programmatically
+    retrieve information about inventory in Amazon's fulfillment network.
+  license:
+    name: Apache License 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  title: Selling Partner API for FBA Inventory
+  version: v1
+servers:
+- url: https://sellingpartnerapi-na.amazon.com/
+paths:
+  /fba/inventory/v1/summaries:
+    get:
+      description: |-
+        Returns a list of inventory summaries. The summaries returned depend on the presence or absence of the startDateTime, sellerSkus and sellerSku parameters:
+
+        - All inventory summaries with available details are returned when the startDateTime, sellerSkus and sellerSku parameters are omitted.
+        - When startDateTime is provided, the operation returns inventory summaries that have had changes after the date and time specified. The sellerSkus and sellerSku parameters are ignored. Important: To avoid errors, use both startDateTime and nextToken to get the next page of inventory summaries that have changed after the date and time specified.
+        - When the sellerSkus parameter is provided, the operation returns inventory summaries for only the specified sellerSkus. The sellerSku parameter is ignored.
+        - When the sellerSku parameter is provided, the operation returns inventory summaries for only the specified sellerSku.
+
+        Note: The parameters associated with this operation may contain special characters that must be encoded to successfully call the API. To avoid errors with SKUs when encoding URLs, refer to [URL Encoding](https://developer-docs.amazon.com/sp-api/docs/url-encoding).
+
+        Usage Plan:
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 2 | 2 |
+
+        The x-amzn-RateLimit-Limit response header returns the usage plan rate limits that were applied to the requested operation, when available. The table above indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may see higher rate and burst values than those shown here. For more information, see [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits).
+      operationId: getInventorySummaries
+      parameters:
+      - description: "true to return inventory summaries with additional summarized\
+          \ inventory details and quantities. Otherwise, returns inventory summaries\
+          \ only (default value)."
+        in: query
+        name: details
+        schema:
+          default: false
+          type: boolean
+      - description: The granularity type for the inventory aggregation level.
+        in: query
+        name: granularityType
+        required: true
+        schema:
+          enum:
+          - Marketplace
+          type: string
+          x-docgen-enum-table-extension:
+          - value: Marketplace
+            description: Marketplace
+        x-docgen-enum-table-extension:
+        - value: Marketplace
+          description: Marketplace
+      - description: The granularity ID for the inventory aggregation level.
+        in: query
+        name: granularityId
+        required: true
+        schema:
+          type: string
+      - description: "A start date and time in ISO8601 format. If specified, all inventory\
+          \ summaries that have changed since then are returned. You must specify\
+          \ a date and time that is no earlier than 18 months prior to the date and\
+          \ time when you call the API. Note: Changes in inboundWorkingQuantity, inboundShippedQuantity\
+          \ and inboundReceivingQuantity are not detected."
+        in: query
+        name: startDateTime
+        schema:
+          format: date-time
+          type: string
+      - description: A list of seller SKUs for which to return inventory summaries.
+          You may specify up to 50 SKUs.
+        explode: false
+        in: query
+        name: sellerSkus
+        schema:
+          items:
+            type: string
+          maxItems: 50
+          type: array
+        style: form
+      - description: A single seller SKU used for querying the specified seller SKU
+          inventory summaries.
+        in: query
+        name: sellerSku
+        schema:
+          type: string
+      - description: String token returned in the response of your previous request.
+          The string token will expire 30 seconds after being created.
+        in: query
+        name: nextToken
+        schema:
+          type: string
+      - description: The marketplace ID for the marketplace for which to return inventory
+          summaries.
+        explode: false
+        in: query
+        name: marketplaceIds
+        required: true
+        schema:
+          items:
+            type: string
+          maxItems: 1
+          type: array
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInventorySummariesResponse'
+          description: OK
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInventorySummariesResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInventorySummariesResponse'
+          description: "Indicates access to the resource is forbidden. Possible reasons\
+            \ include Access Denied, Unauthorized, Expired Token, Invalid Signature\
+            \ or Resource Not Found."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInventorySummariesResponse'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInventorySummariesResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInventorySummariesResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetInventorySummariesResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - fbaInventory
+    x-amzn-api-sandbox:
+      dynamic: {}
+  /fba/inventory/v1/items:
+    post:
+      description: "Requests that Amazon create product-details in the Sandbox Inventory\
+        \ in the sandbox environment. This is a sandbox-only operation and must be\
+        \ directed to a sandbox endpoint. Refer to [Selling Partner API sandbox](https://developer-docs.amazon.com/sp-api/docs/the-selling-partner-api-sandbox)\
+        \ for more information."
+      operationId: createInventoryItem
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInventoryItemRequest'
+        description: CreateInventoryItem Request Body Parameter.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateInventoryItemResponse'
+          description: OK
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateInventoryItemResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateInventoryItemResponse'
+          description: "Indicates access to the resource is forbidden. Possible reasons\
+            \ include Access Denied, Unauthorized, Expired Token, Invalid Signature\
+            \ or Resource Not Found."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateInventoryItemResponse'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateInventoryItemResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateInventoryItemResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateInventoryItemResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - fbaInventory
+      x-codegen-request-body-name: createInventoryItemRequestBody
+    x-amzn-api-sandbox:
+      dynamic: {}
+    x-amzn-api-sandbox-only: true
+  /fba/inventory/v1/items/{sellerSku}:
+    delete:
+      description: "Requests that Amazon Deletes an item from the Sandbox Inventory\
+        \ in the sandbox environment. This is a sandbox-only operation and must be\
+        \ directed to a sandbox endpoint. Refer to [Selling Partner API sandbox](https://developer-docs.amazon.com/sp-api/docs/the-selling-partner-api-sandbox)\
+        \ for more information."
+      operationId: deleteInventoryItem
+      parameters:
+      - description: A single seller SKU used for querying the specified seller SKU
+          inventory summaries.
+        in: path
+        name: sellerSku
+        required: true
+        schema:
+          type: string
+      - description: The marketplace ID for the marketplace for which the sellerSku
+          is to be deleted.
+        in: query
+        name: marketplaceId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteInventoryItemResponse'
+          description: OK
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteInventoryItemResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteInventoryItemResponse'
+          description: "Indicates access to the resource is forbidden. Possible reasons\
+            \ include Access Denied, Unauthorized, Expired Token, Invalid Signature\
+            \ or Resource Not Found."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteInventoryItemResponse'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteInventoryItemResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteInventoryItemResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteInventoryItemResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - fbaInventory
+    x-amzn-api-sandbox:
+      dynamic: {}
+    x-amzn-api-sandbox-only: true
+  /fba/inventory/v1/items/inventory:
+    post:
+      description: "Requests that Amazon add items to the Sandbox Inventory with desired\
+        \ amount of quantity in the sandbox environment. This is a sandbox-only operation\
+        \ and must be directed to a sandbox endpoint. Refer to [Selling Partner API\
+        \ sandbox](https://developer-docs.amazon.com/sp-api/docs/the-selling-partner-api-sandbox)\
+        \ for more information."
+      operationId: addInventory
+      parameters:
+      - description: A unique token/requestId provided with each call to ensure idempotency.
+        in: header
+        name: x-amzn-idempotency-token
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddInventoryRequest'
+        description: List of items to add to Sandbox inventory.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddInventoryResponse'
+          description: OK
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddInventoryResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddInventoryResponse'
+          description: "Indicates access to the resource is forbidden. Possible reasons\
+            \ include Access Denied, Unauthorized, Expired Token, Invalid Signature\
+            \ or Resource Not Found."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddInventoryResponse'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddInventoryResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddInventoryResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddInventoryResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - fbaInventory
+      x-codegen-request-body-name: addInventoryRequestBody
+    x-amzn-api-sandbox:
+      dynamic: {}
+    x-amzn-api-sandbox-only: true
+components:
+  schemas:
+    CreateInventoryItemRequest:
+      description: An item to be created in the inventory.
+      example:
+        marketplaceId: marketplaceId
+        sellerSku: sellerSku
+        productName: productName
+      properties:
+        sellerSku:
+          description: The seller SKU of the item.
+          type: string
+        marketplaceId:
+          description: The marketplaceId.
+          type: string
+        productName:
+          description: The name of the item.
+          type: string
+      required:
+      - marketplaceId
+      - productName
+      - sellerSku
+      type: object
+    AddInventoryRequest:
+      description: The object with the list of Inventory to be added
+      example:
+        inventoryItems:
+        - marketplaceId: marketplaceId
+          quantity: 0
+          sellerSku: sellerSku
+        - marketplaceId: marketplaceId
+          quantity: 0
+          sellerSku: sellerSku
+      properties:
+        inventoryItems:
+          description: List of Inventory to be added
+          items:
+            $ref: '#/components/schemas/InventoryItem'
+          type: array
+      type: object
+    InventoryItems:
+      description: List of Inventory to be added
+      items:
+        $ref: '#/components/schemas/InventoryItem'
+      type: array
+    InventoryItem:
+      description: An item in the list of inventory to be added.
+      example:
+        marketplaceId: marketplaceId
+        quantity: 0
+        sellerSku: sellerSku
+      properties:
+        sellerSku:
+          description: The seller SKU of the item.
+          type: string
+        marketplaceId:
+          description: The marketplaceId.
+          type: string
+        quantity:
+          description: The quantity of item to add.
+          type: integer
+      required:
+      - marketplaceId
+      - quantity
+      - sellerSku
+      type: object
+    CreateInventoryItemResponse:
+      description: The response schema for the CreateInventoryItem operation.
+      example:
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    DeleteInventoryItemResponse:
+      description: The response schema for the DeleteInventoryItem operation.
+      example:
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    AddInventoryResponse:
+      description: The response schema for the AddInventory operation.
+      example:
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    Granularity:
+      description: "Describes a granularity at which inventory data can be aggregated.\
+        \ For example, if you use Marketplace granularity, the fulfillable quantity\
+        \ will reflect inventory that could be fulfilled in the given marketplace."
+      example:
+        granularityType: granularityType
+        granularityId: granularityId
+      properties:
+        granularityType:
+          description: The granularity type for the inventory aggregation level.
+          type: string
+          x-docgen-enum-table-extension:
+          - value: Marketplace
+            description: Marketplace
+        granularityId:
+          description: "The granularity ID for the specified granularity type. When\
+            \ granularityType is Marketplace, specify the marketplaceId."
+          type: string
+      type: object
+    ReservedQuantity:
+      description: The quantity of reserved inventory.
+      example:
+        pendingTransshipmentQuantity: 7
+        pendingCustomerOrderQuantity: 2
+        totalReservedQuantity: 5
+        fcProcessingQuantity: 9
+      properties:
+        totalReservedQuantity:
+          description: "The total number of units in Amazon's fulfillment network\
+            \ that are currently being picked, packed, and shipped; or are sidelined\
+            \ for measurement, sampling, or other internal processes."
+          type: integer
+        pendingCustomerOrderQuantity:
+          description: The number of units reserved for customer orders.
+          type: integer
+        pendingTransshipmentQuantity:
+          description: The number of units being transferred from one fulfillment
+            center to another.
+          type: integer
+        fcProcessingQuantity:
+          description: The number of units that have been sidelined at the fulfillment
+            center for additional processing.
+          type: integer
+      type: object
+    ResearchingQuantityEntry:
+      description: The misplaced or warehouse damaged inventory that is actively being
+        confirmed at our fulfillment centers.
+      example:
+        quantity: 2
+        name: researchingQuantityInShortTerm
+      properties:
+        name:
+          description: The duration of the research.
+          enum:
+          - researchingQuantityInShortTerm
+          - researchingQuantityInMidTerm
+          - researchingQuantityInLongTerm
+          type: string
+          x-docgen-enum-table-extension:
+          - value: researchingQuantityInShortTerm
+            description: Short Term for 1-10 days.
+          - value: researchingQuantityInMidTerm
+            description: Mid Term for 11-20 days.
+          - value: researchingQuantityInLongTerm
+            description: Long Term for 21 days or longer.
+        quantity:
+          description: The number of units.
+          type: integer
+      required:
+      - name
+      - quantity
+      type: object
+    ResearchingQuantity:
+      description: The number of misplaced or warehouse damaged units that are actively
+        being confirmed at our fulfillment centers.
+      example:
+        totalResearchingQuantity: 3
+        researchingQuantityBreakdown:
+        - quantity: 2
+          name: researchingQuantityInShortTerm
+        - quantity: 2
+          name: researchingQuantityInShortTerm
+      properties:
+        totalResearchingQuantity:
+          description: The total number of units currently being researched in Amazon's
+            fulfillment network.
+          type: integer
+        researchingQuantityBreakdown:
+          description: A list of quantity details for items currently being researched.
+          items:
+            $ref: '#/components/schemas/ResearchingQuantityEntry'
+          type: array
+      type: object
+    UnfulfillableQuantity:
+      description: The quantity of unfulfillable inventory.
+      example:
+        distributorDamagedQuantity: 1
+        warehouseDamagedQuantity: 1
+        expiredQuantity: 7
+        customerDamagedQuantity: 7
+        totalUnfulfillableQuantity: 4
+        defectiveQuantity: 6
+        carrierDamagedQuantity: 1
+      properties:
+        totalUnfulfillableQuantity:
+          description: The total number of units in Amazon's fulfillment network in
+            unsellable condition.
+          type: integer
+        customerDamagedQuantity:
+          description: The number of units in customer damaged disposition.
+          type: integer
+        warehouseDamagedQuantity:
+          description: The number of units in warehouse damaged disposition.
+          type: integer
+        distributorDamagedQuantity:
+          description: The number of units in distributor damaged disposition.
+          type: integer
+        carrierDamagedQuantity:
+          description: The number of units in carrier damaged disposition.
+          type: integer
+        defectiveQuantity:
+          description: The number of units in defective disposition.
+          type: integer
+        expiredQuantity:
+          description: The number of units in expired disposition.
+          type: integer
+      type: object
+    InventoryDetails:
+      description: Summarized inventory details. This object will not appear if the
+        details parameter in the request is false.
+      example:
+        inboundShippedQuantity: 1
+        inboundWorkingQuantity: 6
+        reservedQuantity:
+          pendingTransshipmentQuantity: 7
+          pendingCustomerOrderQuantity: 2
+          totalReservedQuantity: 5
+          fcProcessingQuantity: 9
+        unfulfillableQuantity:
+          distributorDamagedQuantity: 1
+          warehouseDamagedQuantity: 1
+          expiredQuantity: 7
+          customerDamagedQuantity: 7
+          totalUnfulfillableQuantity: 4
+          defectiveQuantity: 6
+          carrierDamagedQuantity: 1
+        inboundReceivingQuantity: 5
+        researchingQuantity:
+          totalResearchingQuantity: 3
+          researchingQuantityBreakdown:
+          - quantity: 2
+            name: researchingQuantityInShortTerm
+          - quantity: 2
+            name: researchingQuantityInShortTerm
+        fulfillableQuantity: 0
+      properties:
+        fulfillableQuantity:
+          description: "The item quantity that can be picked, packed, and shipped."
+          type: integer
+        inboundWorkingQuantity:
+          description: The number of units in an inbound shipment for which you have
+            notified Amazon.
+          type: integer
+        inboundShippedQuantity:
+          description: The number of units in an inbound shipment that you have notified
+            Amazon about and have provided a tracking number.
+          type: integer
+        inboundReceivingQuantity:
+          description: "The number of units that have not yet been received at an\
+            \ Amazon fulfillment center for processing, but are part of an inbound\
+            \ shipment with some units that have already been received and processed."
+          type: integer
+        reservedQuantity:
+          $ref: '#/components/schemas/ReservedQuantity'
+        researchingQuantity:
+          $ref: '#/components/schemas/ResearchingQuantity'
+        unfulfillableQuantity:
+          $ref: '#/components/schemas/UnfulfillableQuantity'
+      type: object
+    InventorySummary:
+      description: Inventory summary for a specific item.
+      example:
+        condition: condition
+        totalQuantity: 1
+        fnSku: fnSku
+        stores:
+        - stores
+        - stores
+        inventoryDetails:
+          inboundShippedQuantity: 1
+          inboundWorkingQuantity: 6
+          reservedQuantity:
+            pendingTransshipmentQuantity: 7
+            pendingCustomerOrderQuantity: 2
+            totalReservedQuantity: 5
+            fcProcessingQuantity: 9
+          unfulfillableQuantity:
+            distributorDamagedQuantity: 1
+            warehouseDamagedQuantity: 1
+            expiredQuantity: 7
+            customerDamagedQuantity: 7
+            totalUnfulfillableQuantity: 4
+            defectiveQuantity: 6
+            carrierDamagedQuantity: 1
+          inboundReceivingQuantity: 5
+          researchingQuantity:
+            totalResearchingQuantity: 3
+            researchingQuantityBreakdown:
+            - quantity: 2
+              name: researchingQuantityInShortTerm
+            - quantity: 2
+              name: researchingQuantityInShortTerm
+          fulfillableQuantity: 0
+        asin: asin
+        lastUpdatedTime: 2000-01-23T04:56:07.000+00:00
+        sellerSku: sellerSku
+        productName: productName
+      properties:
+        asin:
+          description: The Amazon Standard Identification Number (ASIN) of an item.
+          type: string
+        fnSku:
+          description: Amazon's fulfillment network SKU identifier.
+          type: string
+        sellerSku:
+          description: The seller SKU of the item.
+          type: string
+        condition:
+          description: "The condition of the item as described by the seller (for\
+            \ example, New Item)."
+          type: string
+        inventoryDetails:
+          $ref: '#/components/schemas/InventoryDetails'
+        lastUpdatedTime:
+          description: The date and time that any quantity was last updated.
+          format: date-time
+          type: string
+        productName:
+          description: The localized language product title of the item within the
+            specific marketplace.
+          type: string
+        totalQuantity:
+          description: The total number of units in an inbound shipment or in Amazon
+            fulfillment centers.
+          type: integer
+        stores:
+          description: A list of seller-enrolled stores that apply to this seller
+            SKU.
+          items:
+            type: string
+          type: array
+      type: object
+    InventorySummaries:
+      description: A list of inventory summaries.
+      items:
+        $ref: '#/components/schemas/InventorySummary'
+      type: array
+    Pagination:
+      description: The process of returning the results to a request in batches of
+        a defined size called pages. This is done to exercise some control over result
+        size and overall throughput. It's a form of traffic management.
+      example:
+        nextToken: nextToken
+      properties:
+        nextToken:
+          description: "A generated string used to retrieve the next page of the result.\
+            \ If nextToken is returned, pass the value of nextToken to the next request.\
+            \ If nextToken is not returned, there are no more items to return."
+          type: string
+      type: object
+    GetInventorySummariesResult:
+      description: The payload schema for the getInventorySummaries operation.
+      example:
+        inventorySummaries:
+        - condition: condition
+          totalQuantity: 1
+          fnSku: fnSku
+          stores:
+          - stores
+          - stores
+          inventoryDetails:
+            inboundShippedQuantity: 1
+            inboundWorkingQuantity: 6
+            reservedQuantity:
+              pendingTransshipmentQuantity: 7
+              pendingCustomerOrderQuantity: 2
+              totalReservedQuantity: 5
+              fcProcessingQuantity: 9
+            unfulfillableQuantity:
+              distributorDamagedQuantity: 1
+              warehouseDamagedQuantity: 1
+              expiredQuantity: 7
+              customerDamagedQuantity: 7
+              totalUnfulfillableQuantity: 4
+              defectiveQuantity: 6
+              carrierDamagedQuantity: 1
+            inboundReceivingQuantity: 5
+            researchingQuantity:
+              totalResearchingQuantity: 3
+              researchingQuantityBreakdown:
+              - quantity: 2
+                name: researchingQuantityInShortTerm
+              - quantity: 2
+                name: researchingQuantityInShortTerm
+            fulfillableQuantity: 0
+          asin: asin
+          lastUpdatedTime: 2000-01-23T04:56:07.000+00:00
+          sellerSku: sellerSku
+          productName: productName
+        - condition: condition
+          totalQuantity: 1
+          fnSku: fnSku
+          stores:
+          - stores
+          - stores
+          inventoryDetails:
+            inboundShippedQuantity: 1
+            inboundWorkingQuantity: 6
+            reservedQuantity:
+              pendingTransshipmentQuantity: 7
+              pendingCustomerOrderQuantity: 2
+              totalReservedQuantity: 5
+              fcProcessingQuantity: 9
+            unfulfillableQuantity:
+              distributorDamagedQuantity: 1
+              warehouseDamagedQuantity: 1
+              expiredQuantity: 7
+              customerDamagedQuantity: 7
+              totalUnfulfillableQuantity: 4
+              defectiveQuantity: 6
+              carrierDamagedQuantity: 1
+            inboundReceivingQuantity: 5
+            researchingQuantity:
+              totalResearchingQuantity: 3
+              researchingQuantityBreakdown:
+              - quantity: 2
+                name: researchingQuantityInShortTerm
+              - quantity: 2
+                name: researchingQuantityInShortTerm
+            fulfillableQuantity: 0
+          asin: asin
+          lastUpdatedTime: 2000-01-23T04:56:07.000+00:00
+          sellerSku: sellerSku
+          productName: productName
+        granularity:
+          granularityType: granularityType
+          granularityId: granularityId
+      properties:
+        granularity:
+          $ref: '#/components/schemas/Granularity'
+        inventorySummaries:
+          description: A list of inventory summaries.
+          items:
+            $ref: '#/components/schemas/InventorySummary'
+          type: array
+      required:
+      - granularity
+      - inventorySummaries
+      type: object
+    GetInventorySummariesResponse:
+      description: The Response schema.
+      example:
+        pagination:
+          nextToken: nextToken
+        payload:
+          inventorySummaries:
+          - condition: condition
+            totalQuantity: 1
+            fnSku: fnSku
+            stores:
+            - stores
+            - stores
+            inventoryDetails:
+              inboundShippedQuantity: 1
+              inboundWorkingQuantity: 6
+              reservedQuantity:
+                pendingTransshipmentQuantity: 7
+                pendingCustomerOrderQuantity: 2
+                totalReservedQuantity: 5
+                fcProcessingQuantity: 9
+              unfulfillableQuantity:
+                distributorDamagedQuantity: 1
+                warehouseDamagedQuantity: 1
+                expiredQuantity: 7
+                customerDamagedQuantity: 7
+                totalUnfulfillableQuantity: 4
+                defectiveQuantity: 6
+                carrierDamagedQuantity: 1
+              inboundReceivingQuantity: 5
+              researchingQuantity:
+                totalResearchingQuantity: 3
+                researchingQuantityBreakdown:
+                - quantity: 2
+                  name: researchingQuantityInShortTerm
+                - quantity: 2
+                  name: researchingQuantityInShortTerm
+              fulfillableQuantity: 0
+            asin: asin
+            lastUpdatedTime: 2000-01-23T04:56:07.000+00:00
+            sellerSku: sellerSku
+            productName: productName
+          - condition: condition
+            totalQuantity: 1
+            fnSku: fnSku
+            stores:
+            - stores
+            - stores
+            inventoryDetails:
+              inboundShippedQuantity: 1
+              inboundWorkingQuantity: 6
+              reservedQuantity:
+                pendingTransshipmentQuantity: 7
+                pendingCustomerOrderQuantity: 2
+                totalReservedQuantity: 5
+                fcProcessingQuantity: 9
+              unfulfillableQuantity:
+                distributorDamagedQuantity: 1
+                warehouseDamagedQuantity: 1
+                expiredQuantity: 7
+                customerDamagedQuantity: 7
+                totalUnfulfillableQuantity: 4
+                defectiveQuantity: 6
+                carrierDamagedQuantity: 1
+              inboundReceivingQuantity: 5
+              researchingQuantity:
+                totalResearchingQuantity: 3
+                researchingQuantityBreakdown:
+                - quantity: 2
+                  name: researchingQuantityInShortTerm
+                - quantity: 2
+                  name: researchingQuantityInShortTerm
+              fulfillableQuantity: 0
+            asin: asin
+            lastUpdatedTime: 2000-01-23T04:56:07.000+00:00
+            sellerSku: sellerSku
+            productName: productName
+          granularity:
+            granularityType: granularityType
+            granularityId: granularityId
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        payload:
+          $ref: '#/components/schemas/GetInventorySummariesResult'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    Error:
+      description: An error response returned when the request is unsuccessful.
+      example:
+        code: code
+        details: details
+        message: message
+      properties:
+        code:
+          description: An error code that identifies the type of error that occurred.
+          type: string
+        message:
+          description: A message that describes the error condition in a human-readable
+            form.
+          type: string
+        details:
+          description: Additional information that can help the caller understand
+            or fix the issue.
+          type: string
+      required:
+      - code
+      type: object
+    ErrorList:
+      description: A list of error responses returned when a request is unsuccessful.
+      items:
+        $ref: '#/components/schemas/Error'
+      type: array
+x-original-swagger-version: "2.0"

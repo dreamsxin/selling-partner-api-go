@@ -1,0 +1,2066 @@
+openapi: 3.0.1
+info:
+  contact:
+    name: Selling Partner API Developer Support
+    url: https://sellercentral.amazon.com/gp/mws/contactus.html
+  description: The Selling Partner API for Reports lets you retrieve and manage a
+    variety of reports that can help selling partners manage their businesses.
+  license:
+    name: Apache License 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  title: Selling Partner API for Reports
+  version: 2021-06-30
+servers:
+- url: https://sellingpartnerapi-na.amazon.com/
+paths:
+  /reports/2021-06-30/reports:
+    get:
+      description: |-
+        Returns report details for the reports that match the filters that you specify.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.0222 | 10 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that were applied to the requested operation, when available. The table above indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may see higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: getReports
+      parameters:
+      - description: "A list of report types used to filter reports. Refer to [Report\
+          \ Type Values](https://developer-docs.amazon.com/sp-api/docs/report-type-values)\
+          \ for more information. When reportTypes is provided, the other filter parameters\
+          \ (processingStatuses, marketplaceIds, createdSince, createdUntil) and pageSize\
+          \ may also be provided. Either reportTypes or nextToken is required."
+        explode: false
+        in: query
+        name: reportTypes
+        schema:
+          items:
+            type: string
+          maxItems: 10
+          minItems: 1
+          type: array
+        style: form
+      - description: A list of processing statuses used to filter reports.
+        explode: false
+        in: query
+        name: processingStatuses
+        schema:
+          items:
+            enum:
+            - CANCELLED
+            - DONE
+            - FATAL
+            - IN_PROGRESS
+            - IN_QUEUE
+            type: string
+            x-docgen-enum-table-extension:
+            - value: CANCELLED
+              description: "The report was cancelled. There are two ways a report\
+                \ can be cancelled: an explicit cancellation request before the report\
+                \ starts processing, or an automatic cancellation if there is no data\
+                \ to return."
+            - value: DONE
+              description: The report has completed processing.
+            - value: FATAL
+              description: The report was aborted due to a fatal error.
+            - value: IN_PROGRESS
+              description: The report is being processed.
+            - value: IN_QUEUE
+              description: The report has not yet started processing. It may be waiting
+                for another `IN_PROGRESS` report.
+          minItems: 1
+          type: array
+        style: form
+      - description: A list of marketplace identifiers used to filter reports. The
+          reports returned will match at least one of the marketplaces that you specify.
+        explode: false
+        in: query
+        name: marketplaceIds
+        schema:
+          items:
+            type: string
+          maxItems: 10
+          minItems: 1
+          type: array
+        style: form
+      - description: The maximum number of reports to return in a single call.
+        in: query
+        name: pageSize
+        schema:
+          default: 10
+          maximum: 100
+          minimum: 1
+          type: integer
+      - description: "The earliest report creation date and time for reports to include\
+          \ in the response, in <a href='https://developer-docs.amazon.com/sp-api/docs/iso-8601'>ISO\
+          \ 8601</a> date time format. The default is 90 days ago. Reports are retained\
+          \ for a maximum of 90 days."
+        in: query
+        name: createdSince
+        schema:
+          format: date-time
+          type: string
+      - description: "The latest report creation date and time for reports to include\
+          \ in the response, in <a href='https://developer-docs.amazon.com/sp-api/docs/iso-8601'>ISO\
+          \ 8601</a> date time format. The default is now."
+        in: query
+        name: createdUntil
+        schema:
+          format: date-time
+          type: string
+      - description: "A string token returned in the response to your previous request.\
+          \ `nextToken` is returned when the number of results exceeds the specified\
+          \ `pageSize` value. To get the next page of results, call the `getReports`\
+          \ operation and include this token as the only parameter. Specifying `nextToken`\
+          \ with any other parameters will cause the request to fail."
+        in: query
+        name: nextToken
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetReportsResponse'
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  reportTypes:
+                    value:
+                    - FEE_DISCOUNTS_REPORT
+                    - GET_AFN_INVENTORY_DATA
+                  processingStatuses:
+                    value:
+                    - IN_QUEUE
+                    - IN_PROGRESS
+              response:
+                nextToken: VGhpcyB0b2tlbiBpcyBvcGFxdWUgYW5kIGludGVudGlvbmFsbHkgb2JmdXNjYXRlZA==
+                reports:
+                - reportId: ReportId1
+                  reportType: FEE_DISCOUNTS_REPORT
+                  dataStartTime: 2024-03-11T13:47:20.677Z
+                  dataEndTime: 2024-03-12T13:47:20.677Z
+                  createdTime: 2024-03-10T13:47:20.677Z
+                  processingStatus: IN_PROGRESS
+                  processingStartTime: 2024-03-10T13:47:20.677Z
+                  processingEndTime: 2024-03-12T13:47:20.677Z
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  reportTypes:
+                    value:
+                    - FEE_DISCOUNTS_REPORT
+                    - GET_AFN_INVENTORY_DATA
+                  processingStatuses:
+                    value:
+                    - BAD_VALUE
+                    - IN_PROGRESS
+              response:
+                errors:
+                - code: "400"
+                  message: Invalid input
+                  details: Invalid input in processing status
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Authorization header is not formatted correctly
+            or does not contain a valid token.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Content-Type header is invalid.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - reports
+    post:
+      description: |-
+        Creates a report.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.0167 | 15 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that were applied to the requested operation, when available. The table above indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may see higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: createReport
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportSpecification'
+        description: Information required to create the report.
+        required: true
+      responses:
+        "202":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateReportResponse'
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  body:
+                    value:
+                      reportType: GET_MERCHANT_LISTINGS_ALL_DATA
+                      dataStartTime: 2024-03-10T20:11:24.000Z
+                      marketplaceIds:
+                      - A1PA6795UKMFR9
+                      - ATVPDKIKX0DER
+              response:
+                reportId: ID323
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  body:
+                    value:
+                      reportType: BAD_FEE_DISCOUNTS_REPORT
+                      dataStartTime: 2024-03-10T20:11:24.000Z
+                      marketplaceIds:
+                      - A1PA6795UKMFR9
+                      - ATVPDKIKX0DER
+              response:
+                errors:
+                - code: "400"
+                  message: Invalid input
+                  details: Invalid input
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Authorization header is not formatted correctly
+            or does not contain a valid token.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Content-Type header is invalid.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - reports
+      x-codegen-request-body-name: body
+  /reports/2021-06-30/reports/{reportId}:
+    delete:
+      description: |-
+        Cancels the report that you specify. Only reports with `processingStatus=IN_QUEUE` can be cancelled. Cancelled reports are returned in subsequent calls to the `getReport` and `getReports` operations.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.0222 | 10 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that were applied to the requested operation, when available. The table above indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may see higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: cancelReport
+      parameters:
+      - description: The identifier for the report. This identifier is unique only
+          in combination with a seller ID.
+        in: path
+        name: reportId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content: {}
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  reportId:
+                    value: ID
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response:
+                errors:
+                - code: "400"
+                  message: Invalid input
+                  details: Invalid input
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Authorization header is not formatted correctly
+            or does not contain a valid token.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Content-Type header is invalid.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - reports
+    get:
+      description: |-
+        Returns report details (including the `reportDocumentId`, if available) for the report that you specify.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 2 | 15 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that were applied to the requested operation, when available. The table above indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may see higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: getReport
+      parameters:
+      - description: The identifier for the report. This identifier is unique only
+          in combination with a seller ID.
+        in: path
+        name: reportId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Report'
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  reportId:
+                    value: ID323
+              response:
+                reportId: ReportId1
+                reportType: FEE_DISCOUNTS_REPORT
+                dataStartTime: 2024-03-11T13:47:20.677Z
+                dataEndTime: 2024-03-12T13:47:20.677Z
+                createdTime: 2024-03-10T13:47:20.677Z
+                processingStatus: IN_PROGRESS
+                processingStartTime: 2024-03-10T13:47:20.677Z
+                processingEndTime: 2024-03-12T13:47:20.677Z
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  reportId:
+                    value: badReportId1
+              response:
+                errors:
+                - code: "400"
+                  message: Invalid input
+                  details: Invalid input
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Authorization header is not formatted correctly
+            or does not contain a valid token.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Content-Type header is invalid.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - reports
+  /reports/2021-06-30/schedules:
+    get:
+      description: |-
+        Returns report schedule details that match the filters that you specify.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.0222 | 10 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that were applied to the requested operation, when available. The table above indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may see higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: getReportSchedules
+      parameters:
+      - description: "A list of report types used to filter report schedules. Refer\
+          \ to [Report Type Values](https://developer-docs.amazon.com/sp-api/docs/report-type-values)\
+          \ for more information."
+        explode: false
+        in: query
+        name: reportTypes
+        required: true
+        schema:
+          items:
+            type: string
+          maxItems: 10
+          minItems: 1
+          type: array
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportScheduleList'
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  reportTypes:
+                    value:
+                    - FEE_DISCOUNTS_REPORT
+                    - GET_FBA_FULFILLMENT_CUSTOMER_TAXES_DATA
+              response:
+                reportSchedules:
+                - reportType: FEE_DISCOUNTS_REPORT
+                  marketplaceIds:
+                  - ATVPDKIKX0DER
+                  reportScheduleId: ID1
+                  period: PT5M
+                  nextReportCreationTime: 2024-03-11T15:03:44.973Z
+                - reportType: GET_FBA_FULFILLMENT_CUSTOMER_TAXES_DATA
+                  reportScheduleId: ID2
+                  period: PT5M
+                  nextReportCreationTime: 2024-03-11T15:03:44.973Z
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  reportTypes:
+                    value:
+                    - BAD_FEE_DISCOUNTS_REPORT
+                    - BAD_GET_FBA_FULFILLMENT_CUSTOMER_TAXES_DATA
+              response:
+                errors:
+                - code: "400"
+                  message: Invalid input
+                  details: Invalid input
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Authorization header is not formatted correctly
+            or does not contain a valid token.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Content-Type header is invalid.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - reports
+    post:
+      description: |-
+        Creates a report schedule. If a report schedule with the same report type and marketplace IDs already exists, it will be cancelled and replaced with this one.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.0222 | 10 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that were applied to the requested operation, when available. The table above indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may see higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: createReportSchedule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportScheduleSpecification'
+        description: Information required to create the report schedule.
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateReportScheduleResponse'
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  body:
+                    value:
+                      reportType: FEE_DISCOUNTS_REPORT
+                      period: PT5M
+                      nextReportCreationTime: 2024-03-10T20:11:24.000Z
+                      marketplaceIds:
+                      - A1PA6795UKMFR9
+                      - ATVPDKIKX0DER
+              response:
+                reportScheduleId: ID323
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  body:
+                    value:
+                      reportType: BAD_FEE_DISCOUNTS_REPORT
+                      period: PT5M
+                      nextReportCreationTime: 2024-03-10T20:11:24.000Z
+              response:
+                errors:
+                - code: "400"
+                  message: Invalid input
+                  details: Invalid input
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Authorization header is not formatted correctly
+            or does not contain a valid token.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Content-Type header is invalid.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - reports
+      x-codegen-request-body-name: body
+  /reports/2021-06-30/schedules/{reportScheduleId}:
+    delete:
+      description: |-
+        Cancels the report schedule that you specify.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.0222 | 10 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that were applied to the requested operation, when available. The table above indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may see higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: cancelReportSchedule
+      parameters:
+      - description: The identifier for the report schedule. This identifier is unique
+          only in combination with a seller ID.
+        in: path
+        name: reportScheduleId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content: {}
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  reportScheduleId:
+                    value: ID
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response:
+                errors:
+                - code: "400"
+                  message: Invalid input
+                  details: Invalid input
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Authorization header is not formatted correctly
+            or does not contain a valid token.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Content-Type header is invalid.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - reports
+    get:
+      description: |-
+        Returns report schedule details for the report schedule that you specify.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.0222 | 10 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that were applied to the requested operation, when available. The table above indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may see higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: getReportSchedule
+      parameters:
+      - description: The identifier for the report schedule. This identifier is unique
+          only in combination with a seller ID.
+        in: path
+        name: reportScheduleId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportSchedule'
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  reportScheduleId:
+                    value: ID323
+              response:
+                reportScheduleId: ReportScheduleId1
+                reportType: FEE_DISCOUNTS_REPORT
+                period: PT5M
+                nextReportCreationTime: 2024-03-12T13:47:20.677Z
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  reportScheduleId:
+                    value: badReportId1
+              response:
+                errors:
+                - code: "400"
+                  message: Invalid input
+                  details: Invalid input
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Authorization header is not formatted correctly
+            or does not contain a valid token.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Content-Type header is invalid.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - reports
+  /reports/2021-06-30/documents/{reportDocumentId}:
+    get:
+      description: |-
+        Returns the information required for retrieving a report document's contents.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.0167 | 15 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that were applied to the requested operation, when available. The table above indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may see higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: getReportDocument
+      parameters:
+      - description: The identifier for the report document.
+        in: path
+        name: reportDocumentId
+        required: true
+        schema:
+          type: string
+      - description: "When `true`, the Content-Encoding header on the returned URL\
+          \ is set to `gzip` instead of the default `identity` when `compressionAlgorithm`\
+          \ is `GZIP`. This allows automatic decompression by HTTP clients."
+        in: query
+        name: enableContentEncodingUrlHeader
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportDocument'
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  reportDocumentId:
+                    value: 0356cf79-b8b0-4226-b4b9-0ee058ea5760
+              response:
+                reportDocumentId: 0356cf79-b8b0-4226-b4b9-0ee058ea5760
+                url: https://d34o8swod1owfl.cloudfront.net/Report_47700__GET_MERCHANT_LISTINGS_ALL_DATA_.txt
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  reportDocumentId:
+                    value: badDocumentId1
+              response:
+                errors:
+                - code: "400"
+                  message: Invalid input
+                  details: Invalid input
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Authorization header is not formatted correctly
+            or does not contain a valid token.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: "Indicates access to the resource is forbidden. Possible reasons\
+            \ include Access Denied, Unauthorized, Expired Token, or Invalid Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The specified resource does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request's Content-Type header is invalid.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - reports
+components:
+  schemas:
+    ErrorList:
+      description: A list of error responses returned when a request is unsuccessful.
+      example:
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        errors:
+          description: Error response returned when the request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      required:
+      - errors
+      type: object
+    Error:
+      description: Error response returned when the request is unsuccessful.
+      example:
+        code: code
+        details: details
+        message: message
+      properties:
+        code:
+          description: An error code that identifies the type of error that occurred.
+          type: string
+        message:
+          description: A message that describes the error condition.
+          type: string
+        details:
+          description: Additional details that can help the caller understand or fix
+            the issue.
+          type: string
+      required:
+      - code
+      - message
+      type: object
+    Report:
+      description: Detailed information about the report.
+      example:
+        reportType: reportType
+        processingEndTime: 2000-01-23T04:56:07.000+00:00
+        processingStatus: CANCELLED
+        marketplaceIds:
+        - marketplaceIds
+        - marketplaceIds
+        reportDocumentId: reportDocumentId
+        reportId: reportId
+        dataEndTime: 2000-01-23T04:56:07.000+00:00
+        createdTime: 2000-01-23T04:56:07.000+00:00
+        processingStartTime: 2000-01-23T04:56:07.000+00:00
+        reportScheduleId: reportScheduleId
+        dataStartTime: 2000-01-23T04:56:07.000+00:00
+      properties:
+        marketplaceIds:
+          description: A list of marketplace identifiers for the report.
+          items:
+            type: string
+          type: array
+        reportId:
+          description: The identifier for the report. This identifier is unique only
+            in combination with a seller ID.
+          type: string
+        reportType:
+          description: "The report type. Refer to [Report Type Values](https://developer-docs.amazon.com/sp-api/docs/report-type-values)\
+            \ for more information."
+          type: string
+        dataStartTime:
+          description: The start of a date and time range used for selecting the data
+            to report.
+          format: date-time
+          type: string
+        dataEndTime:
+          description: The end of a date and time range used for selecting the data
+            to report.
+          format: date-time
+          type: string
+        reportScheduleId:
+          description: The identifier of the report schedule that created this report
+            (if any). This identifier is unique only in combination with a seller
+            ID.
+          type: string
+        createdTime:
+          description: The date and time when the report was created.
+          format: date-time
+          type: string
+        processingStatus:
+          description: The processing status of the report.
+          enum:
+          - CANCELLED
+          - DONE
+          - FATAL
+          - IN_PROGRESS
+          - IN_QUEUE
+          type: string
+          x-docgen-enum-table-extension:
+          - value: CANCELLED
+            description: "The report was cancelled. There are two ways a report can\
+              \ be cancelled: an explicit cancellation request before the report starts\
+              \ processing, or an automatic cancellation if there is no data to return."
+          - value: DONE
+            description: The report has completed processing.
+          - value: FATAL
+            description: The report was aborted due to a fatal error.
+          - value: IN_PROGRESS
+            description: The report is being processed.
+          - value: IN_QUEUE
+            description: The report has not yet started processing. It may be waiting
+              for another `IN_PROGRESS` report.
+        processingStartTime:
+          description: "The date and time when the report processing started, in <a\
+            \ href='https://developer-docs.amazon.com/sp-api/docs/iso-8601'>ISO 8601</a>\
+            \ date time format."
+          format: date-time
+          type: string
+        processingEndTime:
+          description: "The date and time when the report processing completed, in\
+            \ <a href='https://developer-docs.amazon.com/sp-api/docs/iso-8601'>ISO\
+            \ 8601</a> date time format."
+          format: date-time
+          type: string
+        reportDocumentId:
+          description: The identifier for the report document. Pass this into the
+            `getReportDocument` operation to get the information you will need to
+            retrieve the report document's contents.
+          type: string
+      required:
+      - createdTime
+      - processingStatus
+      - reportId
+      - reportType
+      type: object
+    ReportList:
+      description: A list of reports.
+      items:
+        $ref: '#/components/schemas/Report'
+      type: array
+    CreateReportScheduleSpecification:
+      description: Information required to create the report schedule.
+      example:
+        reportType: reportType
+        marketplaceIds:
+        - marketplaceIds
+        - marketplaceIds
+        - marketplaceIds
+        - marketplaceIds
+        - marketplaceIds
+        period: PT5M
+        nextReportCreationTime: 2000-01-23T04:56:07.000+00:00
+        reportOptions:
+          key: reportOptions
+      properties:
+        reportType:
+          description: "The report type. Refer to [Report Type Values](https://developer-docs.amazon.com/sp-api/docs/report-type-values)\
+            \ for more information."
+          type: string
+        marketplaceIds:
+          description: A list of marketplace identifiers for the report schedule.
+          items:
+            type: string
+          maxItems: 25
+          minItems: 1
+          type: array
+        reportOptions:
+          additionalProperties:
+            type: string
+          description: Additional information passed to reports. This varies by report
+            type.
+          type: object
+        period:
+          description: One of a set of predefined <a href='https://developer-docs.amazon.com/sp-api/docs/iso-8601'>ISO
+            8601</a> periods that specifies how often a report should be created.
+          enum:
+          - PT5M
+          - PT15M
+          - PT30M
+          - PT1H
+          - PT2H
+          - PT4H
+          - PT8H
+          - PT12H
+          - P1D
+          - P2D
+          - P3D
+          - PT84H
+          - P7D
+          - P14D
+          - P15D
+          - P18D
+          - P30D
+          - P1M
+          type: string
+          x-docgen-enum-table-extension:
+          - value: PT5M
+            description: 5 minutes
+          - value: PT15M
+            description: 15 minutes
+          - value: PT30M
+            description: 30 minutes
+          - value: PT1H
+            description: 1 hour
+          - value: PT2H
+            description: 2 hours
+          - value: PT4H
+            description: 4 hours
+          - value: PT8H
+            description: 8 hours
+          - value: PT12H
+            description: 12 hours
+          - value: P1D
+            description: 1 day
+          - value: P2D
+            description: 2 days
+          - value: P3D
+            description: 3 days
+          - value: PT84H
+            description: 84 hours
+          - value: P7D
+            description: 7 days
+          - value: P14D
+            description: 14 days
+          - value: P15D
+            description: 15 days
+          - value: P18D
+            description: 18 days
+          - value: P30D
+            description: 30 days
+          - value: P1M
+            description: 1 month
+        nextReportCreationTime:
+          description: "The date and time when the schedule will create its next report,\
+            \ in <a href='https://developer-docs.amazon.com/sp-api/docs/iso-8601'>ISO\
+            \ 8601</a> date time format."
+          format: date-time
+          type: string
+      required:
+      - marketplaceIds
+      - period
+      - reportType
+      type: object
+    CreateReportSpecification:
+      description: Information required to create the report.
+      example:
+        reportType: reportType
+        marketplaceIds:
+        - marketplaceIds
+        - marketplaceIds
+        - marketplaceIds
+        - marketplaceIds
+        - marketplaceIds
+        dataEndTime: 2000-01-23T04:56:07.000+00:00
+        reportOptions:
+          key: reportOptions
+        dataStartTime: 2000-01-23T04:56:07.000+00:00
+      properties:
+        reportOptions:
+          additionalProperties:
+            type: string
+          description: Additional information passed to reports. This varies by report
+            type.
+          type: object
+        reportType:
+          description: "The report type. Refer to [Report Type Values](https://developer-docs.amazon.com/sp-api/docs/report-type-values)\
+            \ for more information."
+          type: string
+        dataStartTime:
+          description: "The start of a date and time range, in <a href='https://developer-docs.amazon.com/sp-api/docs/iso-8601'>ISO\
+            \ 8601</a> date time format, used for selecting the data to report. The\
+            \ default is now. The value must be prior to or equal to the current date\
+            \ and time. Not all report types make use of this."
+          format: date-time
+          type: string
+        dataEndTime:
+          description: "The end of a date and time range, in <a href='https://developer-docs.amazon.com/sp-api/docs/iso-8601'>ISO\
+            \ 8601</a> date time format, used for selecting the data to report. The\
+            \ default is now. The value must be prior to or equal to the current date\
+            \ and time. Not all report types make use of this."
+          format: date-time
+          type: string
+        marketplaceIds:
+          description: "A list of marketplace identifiers. The report document's contents\
+            \ will contain data for all of the specified marketplaces, unless the\
+            \ report type indicates otherwise."
+          items:
+            type: string
+          maxItems: 25
+          minItems: 1
+          type: array
+      required:
+      - marketplaceIds
+      - reportType
+      type: object
+    ReportOptions:
+      additionalProperties:
+        type: string
+      description: Additional information passed to reports. This varies by report
+        type.
+      type: object
+    ReportSchedule:
+      description: Detailed information about a report schedule.
+      example:
+        reportType: reportType
+        marketplaceIds:
+        - marketplaceIds
+        - marketplaceIds
+        period: period
+        nextReportCreationTime: 2000-01-23T04:56:07.000+00:00
+        reportOptions:
+          key: reportOptions
+        reportScheduleId: reportScheduleId
+      properties:
+        reportScheduleId:
+          description: The identifier for the report schedule. This identifier is
+            unique only in combination with a seller ID.
+          type: string
+        reportType:
+          description: "The report type. Refer to [Report Type Values](https://developer-docs.amazon.com/sp-api/docs/report-type-values)\
+            \ for more information."
+          type: string
+        marketplaceIds:
+          description: "A list of marketplace identifiers. The report document's contents\
+            \ will contain data for all of the specified marketplaces, unless the\
+            \ report type indicates otherwise."
+          items:
+            type: string
+          type: array
+        reportOptions:
+          additionalProperties:
+            type: string
+          description: Additional information passed to reports. This varies by report
+            type.
+          type: object
+        period:
+          description: An <a href='https://developer-docs.amazon.com/sp-api/docs/iso-8601'>ISO
+            8601</a> period value that indicates how often a report should be created.
+          type: string
+        nextReportCreationTime:
+          description: "The date and time when the schedule will create its next report,\
+            \ in <a href='https://developer-docs.amazon.com/sp-api/docs/iso-8601'>ISO\
+            \ 8601</a> date time format."
+          format: date-time
+          type: string
+      required:
+      - period
+      - reportScheduleId
+      - reportType
+      type: object
+    ReportScheduleList:
+      description: A list of report schedules.
+      example:
+        reportSchedules:
+        - reportType: reportType
+          marketplaceIds:
+          - marketplaceIds
+          - marketplaceIds
+          period: period
+          nextReportCreationTime: 2000-01-23T04:56:07.000+00:00
+          reportOptions:
+            key: reportOptions
+          reportScheduleId: reportScheduleId
+        - reportType: reportType
+          marketplaceIds:
+          - marketplaceIds
+          - marketplaceIds
+          period: period
+          nextReportCreationTime: 2000-01-23T04:56:07.000+00:00
+          reportOptions:
+            key: reportOptions
+          reportScheduleId: reportScheduleId
+      properties:
+        reportSchedules:
+          description: Detailed information about a report schedule.
+          items:
+            $ref: '#/components/schemas/ReportSchedule'
+          type: array
+      required:
+      - reportSchedules
+      type: object
+    CreateReportResponse:
+      description: The response schema.
+      example:
+        reportId: reportId
+      properties:
+        reportId:
+          description: The identifier for the report. This identifier is unique only
+            in combination with a seller ID.
+          type: string
+      required:
+      - reportId
+      type: object
+    GetReportsResponse:
+      description: The response for the `getReports` operation.
+      example:
+        reports:
+        - reportType: reportType
+          processingEndTime: 2000-01-23T04:56:07.000+00:00
+          processingStatus: CANCELLED
+          marketplaceIds:
+          - marketplaceIds
+          - marketplaceIds
+          reportDocumentId: reportDocumentId
+          reportId: reportId
+          dataEndTime: 2000-01-23T04:56:07.000+00:00
+          createdTime: 2000-01-23T04:56:07.000+00:00
+          processingStartTime: 2000-01-23T04:56:07.000+00:00
+          reportScheduleId: reportScheduleId
+          dataStartTime: 2000-01-23T04:56:07.000+00:00
+        - reportType: reportType
+          processingEndTime: 2000-01-23T04:56:07.000+00:00
+          processingStatus: CANCELLED
+          marketplaceIds:
+          - marketplaceIds
+          - marketplaceIds
+          reportDocumentId: reportDocumentId
+          reportId: reportId
+          dataEndTime: 2000-01-23T04:56:07.000+00:00
+          createdTime: 2000-01-23T04:56:07.000+00:00
+          processingStartTime: 2000-01-23T04:56:07.000+00:00
+          reportScheduleId: reportScheduleId
+          dataStartTime: 2000-01-23T04:56:07.000+00:00
+        nextToken: nextToken
+      properties:
+        reports:
+          description: A list of reports.
+          items:
+            $ref: '#/components/schemas/Report'
+          type: array
+        nextToken:
+          description: "Returned when the number of results exceeds `pageSize`. To\
+            \ get the next page of results, call `getReports` with this token as the\
+            \ only parameter."
+          type: string
+      required:
+      - reports
+      type: object
+    CreateReportScheduleResponse:
+      description: Response schema.
+      example:
+        reportScheduleId: reportScheduleId
+      properties:
+        reportScheduleId:
+          description: The identifier for the report schedule. This identifier is
+            unique only in combination with a seller ID.
+          type: string
+      required:
+      - reportScheduleId
+      type: object
+    ReportDocument:
+      description: Information required for the report document.
+      example:
+        reportDocumentId: reportDocumentId
+        compressionAlgorithm: GZIP
+        url: url
+      properties:
+        reportDocumentId:
+          description: The identifier for the report document. This identifier is
+            unique only in combination with a seller ID.
+          type: string
+        url:
+          description: "A presigned URL for the report document. If `compressionAlgorithm`\
+            \ is not returned, you can download the report directly from this URL.\
+            \ This URL expires after 5 minutes."
+          type: string
+        compressionAlgorithm:
+          description: "If the report document contents have been compressed, the\
+            \ compression algorithm used is returned in this property and you must\
+            \ decompress the report when you download. Otherwise, you can download\
+            \ the report directly. Refer to [Step 2. Download the report](https://developer-docs.amazon.com/sp-api/docs/reports-api-v2021-06-30-retrieve-a-report#step-2-download-the-report)\
+            \ in the use case guide, where sample code is provided."
+          enum:
+          - GZIP
+          type: string
+          x-docgen-enum-table-extension:
+          - value: GZIP
+            description: The gzip compression algorithm.
+      required:
+      - reportDocumentId
+      - url
+      type: object
+x-original-swagger-version: "2.0"

@@ -1,0 +1,855 @@
+openapi: 3.0.1
+info:
+  contact:
+    name: Selling Partner API Developer Support
+    url: https://sellercentral.amazon.com/gp/mws/contactus.html
+  description: |-
+    The [Selling Partner API for Sellers](https://developer-docs.amazon.com/sp-api/docs/sellers-api-v1-reference) (Sellers API) provides essential information about seller accounts, such as:
+
+    - The marketplaces a seller can list in
+    - The default language and currency of a marketplace
+    - Whether the seller has suspended listings
+
+    Refer to the [Sellers API reference](https://developer-docs.amazon.com/sp-api/docs/sellers-api-v1-reference) for details about this API's operations, data types, and schemas.
+  license:
+    name: Apache License 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  title: The Selling Partner API for Sellers
+  version: v1
+servers:
+- url: https://sellingpartnerapi-na.amazon.com/
+paths:
+  /sellers/v1/marketplaceParticipations:
+    get:
+      description: |-
+        Returns a list of marketplaces where the seller can list items and information about the seller's participation in those marketplaces.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.016 | 15 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that were applied to the requested operation, when available. The preceding table indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: getMarketplaceParticipations
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMarketplaceParticipationsResponse'
+            payload:
+              example:
+              - marketplace:
+                  id: ATVPDKIKX0DER
+                  name: Amazon.com
+                  countryCode: US
+                  defaultCurrencyCode: USD
+                  defaultLanguageCode: en_US
+                  domainName: www.amazon.com
+                storeName: BestSellerStore
+                participation:
+                  isParticipating: true
+                  hasSuspendedListings: false
+          description: Marketplace participations successfully retrieved.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response:
+                payload:
+                - marketplace:
+                    id: ATVPDKIKX0DER
+                    countryCode: US
+                    name: Amazon.com
+                    defaultCurrencyCode: USD
+                    defaultLanguageCode: en_US
+                    domainName: www.amazon.com
+                  storeName: BestSellerStore
+                  participation:
+                    isParticipating: true
+                    hasSuspendedListings: false
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMarketplaceParticipationsResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMarketplaceParticipationsResponse'
+          description: "403 can be caused for reasons like Access Denied, Unauthorized,\
+            \ Expired Token, Invalid Signature or Resource Not Found."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMarketplaceParticipationsResponse'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMarketplaceParticipationsResponse'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: |-
+                Your rate limit (requests per second) for this operation.
+                _Note:_ For this status code, the rate limit header is deprecated and no longer returned.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMarketplaceParticipationsResponse'
+          description: The entity of the request is in a format not supported by the
+            requested resource.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: |-
+                Your rate limit (requests per second) for this operation.
+                _Note:_ For this status code, the rate limit header is deprecated and no longer returned.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMarketplaceParticipationsResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: |-
+                Your rate limit (requests per second) for this operation.
+                _Note:_ For this status code, the rate limit header is deprecated and no longer returned.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMarketplaceParticipationsResponse'
+          description: Encountered an unexpected condition which prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: |-
+                Your rate limit (requests per second) for this operation.
+                _Note:_ For this status code, the rate limit header is deprecated and no longer returned.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMarketplaceParticipationsResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: |-
+                Your rate limit (requests per second) for this operation.
+                _Note:_ For this status code, the rate limit header is deprecated and no longer returned.
+              schema:
+                type: string
+      tags:
+      - sellers
+  /sellers/v1/account:
+    get:
+      description: |-
+        Returns information about a seller account and its marketplaces.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.016 | 15 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that were applied to the requested operation, when available. The preceding table indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: getAccount
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                payload:
+                  businessType: PRIVATE_LIMITED
+                  marketplaceParticipationList:
+                  - marketplace:
+                      id: ATVPDKIKX0DER
+                      name: United States
+                      countryCode: US
+                      domainName: www.amazon.com
+                    storeName: BestSellerStore
+                    participation:
+                      isParticipating: true
+                      hasSuspendedListings: false
+                  sellingPlan: PROFESSIONAL
+                  business:
+                    name: BestSeller Inc.
+                    nonLatinName: ベストセラー株式会社
+                    registeredBusinessAddress:
+                      addressLine1: 123 Main St
+                      addressLine2: Suite 500
+                      city: Seattle
+                      stateOrProvinceCode: WA
+                      postalCode: "98101"
+                      countryCode: US
+                    companyRegistrationNumber: "123456789"
+                    companyTaxIdentificationNumber: "987654321"
+                  primaryContact:
+                    name: John Doe
+                    nonLatinName: ジョン・ドゥ
+                    address:
+                      addressLine1: 456 Oak St
+                      addressLine2: Apt 12
+                      city: Seattle
+                      stateOrProvinceCode: WA
+                      postalCode: "98102"
+                      countryCode: US
+              schema:
+                $ref: '#/components/schemas/GetAccountResponse'
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response:
+                payload:
+                  businessType: PRIVATE_LIMITED
+                  marketplaceParticipationList:
+                  - marketplace:
+                      id: ATVPDKIKX0DER
+                      name: United States
+                      countryCode: US
+                      domainName: www.amazon.com
+                    storeName: BestSellerStore
+                    participation:
+                      isParticipating: true
+                      hasSuspendedListings: false
+                  sellingPlan: PROFESSIONAL
+                  business:
+                    name: BestSeller Inc.
+                    nonLatinName: ベストセラー株式会社
+                    registeredBusinessAddress:
+                      addressLine1: 123 Main St
+                      addressLine2: Suite 500
+                      city: Seattle
+                      stateOrProvinceCode: WA
+                      postalCode: "98101"
+                      countryCode: US
+                    companyRegistrationNumber: "123456789"
+                    companyTaxIdentificationNumber: "987654321"
+                  primaryContact:
+                    name: John Doe
+                    nonLatinName: ジョン・ドゥ
+                    address:
+                      addressLine1: 456 Oak St
+                      addressLine2: Apt 12
+                      city: Seattle
+                      stateOrProvinceCode: WA
+                      postalCode: "98102"
+                      countryCode: US
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAccountResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response:
+                errors:
+                - code: InvalidInput
+                  message: Invalid Input
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAccountResponse'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAccountResponse'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAccountResponse'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAccountResponse'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAccountResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAccountResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAccountResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - sellers
+components:
+  schemas:
+    Error:
+      description: Error response returned when the request is unsuccessful.
+      example:
+        code: code
+        details: details
+        message: message
+      properties:
+        code:
+          description: An error code that identifies the type of error that occurred.
+          type: string
+        message:
+          description: A message that describes the error condition in a human-readable
+            form.
+          type: string
+        details:
+          description: Additional details that can help you understand or fix the
+            issue.
+          type: string
+      required:
+      - code
+      - message
+      type: object
+    ErrorList:
+      description: A list of error responses returned when a request is unsuccessful.
+      items:
+        $ref: '#/components/schemas/Error'
+      type: array
+    MarketplaceParticipation:
+      example:
+        participation:
+          isParticipating: true
+          hasSuspendedListings: true
+        marketplace:
+          countryCode: countryCode
+          domainName: domainName
+          name: name
+          defaultCurrencyCode: defaultCurrencyCode
+          defaultLanguageCode: defaultLanguageCode
+          id: id
+        storeName: storeName
+      properties:
+        marketplace:
+          $ref: '#/components/schemas/Marketplace'
+        participation:
+          $ref: '#/components/schemas/Participation'
+        storeName:
+          description: The name of the seller's store as displayed in the marketplace.
+          type: string
+      required:
+      - marketplace
+      - participation
+      - storeName
+      type: object
+    MarketplaceParticipationList:
+      description: List of marketplace participations.
+      items:
+        $ref: '#/components/schemas/MarketplaceParticipation'
+      type: array
+    GetMarketplaceParticipationsResponse:
+      description: The response schema for the `getMarketplaceParticipations` operation.
+      example:
+        payload:
+        - participation:
+            isParticipating: true
+            hasSuspendedListings: true
+          marketplace:
+            countryCode: countryCode
+            domainName: domainName
+            name: name
+            defaultCurrencyCode: defaultCurrencyCode
+            defaultLanguageCode: defaultLanguageCode
+            id: id
+          storeName: storeName
+        - participation:
+            isParticipating: true
+            hasSuspendedListings: true
+          marketplace:
+            countryCode: countryCode
+            domainName: domainName
+            name: name
+            defaultCurrencyCode: defaultCurrencyCode
+            defaultLanguageCode: defaultLanguageCode
+            id: id
+          storeName: storeName
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        payload:
+          description: List of marketplace participations.
+          items:
+            $ref: '#/components/schemas/MarketplaceParticipation'
+          type: array
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    Marketplace:
+      description: Information about an Amazon marketplace where a seller can list
+        items and customers can view and purchase items.
+      example:
+        countryCode: countryCode
+        domainName: domainName
+        name: name
+        defaultCurrencyCode: defaultCurrencyCode
+        defaultLanguageCode: defaultLanguageCode
+        id: id
+      properties:
+        id:
+          description: The encrypted marketplace value.
+          type: string
+        name:
+          description: The marketplace name.
+          type: string
+        countryCode:
+          description: The ISO 3166-1 alpha-2 format country code of the marketplace.
+          pattern: "^([A-Z]{2})$"
+          type: string
+        defaultCurrencyCode:
+          description: The ISO 4217 format currency code of the marketplace.
+          type: string
+        defaultLanguageCode:
+          description: The ISO 639-1 format language code of the marketplace.
+          type: string
+        domainName:
+          description: The domain name of the marketplace.
+          type: string
+      required:
+      - countryCode
+      - defaultCurrencyCode
+      - defaultLanguageCode
+      - domainName
+      - id
+      - name
+      type: object
+    Participation:
+      description: Information that is specific to a seller in a marketplace.
+      example:
+        isParticipating: true
+        hasSuspendedListings: true
+      properties:
+        isParticipating:
+          description: "If `true`, the seller participates in the marketplace. Otherwise\
+            \ `false`."
+          type: boolean
+        hasSuspendedListings:
+          description: "Specifies if the seller has suspended listings. `true` if\
+            \ the seller Listing Status is set to Inactive, otherwise `false`."
+          type: boolean
+      required:
+      - hasSuspendedListings
+      - isParticipating
+      type: object
+    GetAccountResponse:
+      description: The response schema for the `getAccount` operation.
+      example:
+        payload:
+          sellingPlan: PROFESSIONAL
+          business:
+            registeredBusinessAddress:
+              city: city
+              countryCode: countryCode
+              postalCode: postalCode
+              addressLine1: addressLine1
+              addressLine2: addressLine2
+              stateOrProvinceCode: stateOrProvinceCode
+            nonLatinName: nonLatinName
+            companyTaxIdentificationNumber: companyTaxIdentificationNumber
+            companyRegistrationNumber: companyRegistrationNumber
+            name: name
+          marketplaceParticipationList:
+          - participation:
+              isParticipating: true
+              hasSuspendedListings: true
+            marketplace:
+              countryCode: countryCode
+              domainName: domainName
+              name: name
+              defaultCurrencyCode: defaultCurrencyCode
+              defaultLanguageCode: defaultLanguageCode
+              id: id
+            storeName: storeName
+          - participation:
+              isParticipating: true
+              hasSuspendedListings: true
+            marketplace:
+              countryCode: countryCode
+              domainName: domainName
+              name: name
+              defaultCurrencyCode: defaultCurrencyCode
+              defaultLanguageCode: defaultLanguageCode
+              id: id
+            storeName: storeName
+          primaryContact:
+            nonLatinName: nonLatinName
+            address:
+              city: city
+              countryCode: countryCode
+              postalCode: postalCode
+              addressLine1: addressLine1
+              addressLine2: addressLine2
+              stateOrProvinceCode: stateOrProvinceCode
+            name: name
+          businessType: CHARITY
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        payload:
+          $ref: '#/components/schemas/Account'
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    Account:
+      description: The response schema for the `getAccount` operation.
+      example:
+        sellingPlan: PROFESSIONAL
+        business:
+          registeredBusinessAddress:
+            city: city
+            countryCode: countryCode
+            postalCode: postalCode
+            addressLine1: addressLine1
+            addressLine2: addressLine2
+            stateOrProvinceCode: stateOrProvinceCode
+          nonLatinName: nonLatinName
+          companyTaxIdentificationNumber: companyTaxIdentificationNumber
+          companyRegistrationNumber: companyRegistrationNumber
+          name: name
+        marketplaceParticipationList:
+        - participation:
+            isParticipating: true
+            hasSuspendedListings: true
+          marketplace:
+            countryCode: countryCode
+            domainName: domainName
+            name: name
+            defaultCurrencyCode: defaultCurrencyCode
+            defaultLanguageCode: defaultLanguageCode
+            id: id
+          storeName: storeName
+        - participation:
+            isParticipating: true
+            hasSuspendedListings: true
+          marketplace:
+            countryCode: countryCode
+            domainName: domainName
+            name: name
+            defaultCurrencyCode: defaultCurrencyCode
+            defaultLanguageCode: defaultLanguageCode
+            id: id
+          storeName: storeName
+        primaryContact:
+          nonLatinName: nonLatinName
+          address:
+            city: city
+            countryCode: countryCode
+            postalCode: postalCode
+            addressLine1: addressLine1
+            addressLine2: addressLine2
+            stateOrProvinceCode: stateOrProvinceCode
+          name: name
+        businessType: CHARITY
+      properties:
+        marketplaceParticipationList:
+          description: List of marketplace participations.
+          items:
+            $ref: '#/components/schemas/MarketplaceParticipation'
+          type: array
+        businessType:
+          description: The type of business registered for the seller account.
+          enum:
+          - CHARITY
+          - CRAFTSMAN
+          - NATURAL_PERSON_COMPANY
+          - PUBLIC_LISTED
+          - PRIVATE_LIMITED
+          - SOLE_PROPRIETORSHIP
+          - STATE_OWNED
+          - INDIVIDUAL
+          type: string
+          x-docgen-enum-table-extension:
+          - value: CHARITY
+            description: The business is registered as a charity.
+          - value: CRAFTSMAN
+            description: The business is registered as a craftsman.
+          - value: NATURAL_PERSON_COMPANY
+            description: The business is a natural person company.
+          - value: PUBLIC_LISTED
+            description: The business is a publicly listed company.
+          - value: PRIVATE_LIMITED
+            description: The business is a private limited company.
+          - value: SOLE_PROPRIETORSHIP
+            description: The business is a sole proprietorship.
+          - value: STATE_OWNED
+            description: The business is state-owned.
+          - value: INDIVIDUAL
+            description: The entity is not a business but an individual.
+        sellingPlan:
+          description: The selling plan details.
+          enum:
+          - PROFESSIONAL
+          - INDIVIDUAL
+          type: string
+          x-docgen-enum-table-extension:
+          - value: PROFESSIONAL
+            description: The seller has a professional selling plan.
+          - value: INDIVIDUAL
+            description: The seller has an individual selling plan.
+        business:
+          $ref: '#/components/schemas/Business'
+        primaryContact:
+          $ref: '#/components/schemas/PrimaryContact'
+      required:
+      - businessType
+      - marketplaceParticipationList
+      - sellingPlan
+      type: object
+    Business:
+      description: Information about the seller's business. Certain fields may be
+        omitted depending on the seller's `businessType`.
+      example:
+        registeredBusinessAddress:
+          city: city
+          countryCode: countryCode
+          postalCode: postalCode
+          addressLine1: addressLine1
+          addressLine2: addressLine2
+          stateOrProvinceCode: stateOrProvinceCode
+        nonLatinName: nonLatinName
+        companyTaxIdentificationNumber: companyTaxIdentificationNumber
+        companyRegistrationNumber: companyRegistrationNumber
+        name: name
+      properties:
+        name:
+          description: The registered business name.
+          type: string
+        registeredBusinessAddress:
+          $ref: '#/components/schemas/Address'
+        companyRegistrationNumber:
+          description: "The seller's company registration number, if applicable. This\
+            \ field will be absent for individual sellers and sole proprietorships."
+          type: string
+        companyTaxIdentificationNumber:
+          description: "The seller's company tax identification number, if applicable.\
+            \ This field will be present for certain business types only, such as\
+            \ sole proprietorships."
+          type: string
+        nonLatinName:
+          description: "The non-Latin script version of the registered business name,\
+            \ if applicable."
+          type: string
+      required:
+      - name
+      - registeredBusinessAddress
+      type: object
+    Address:
+      description: Represents an address
+      example:
+        city: city
+        countryCode: countryCode
+        postalCode: postalCode
+        addressLine1: addressLine1
+        addressLine2: addressLine2
+        stateOrProvinceCode: stateOrProvinceCode
+      properties:
+        addressLine1:
+          description: Street address information.
+          type: string
+        addressLine2:
+          description: Additional street address information.
+          type: string
+        countryCode:
+          description: The country code in two-character ISO 3166-1 alpha-2 format.
+          type: string
+        stateOrProvinceCode:
+          description: The state or province code.
+          type: string
+        city:
+          description: The city.
+          type: string
+        postalCode:
+          description: The postal code.
+          type: string
+      required:
+      - addressLine1
+      - countryCode
+      type: object
+    PrimaryContact:
+      description: Information about the seller's primary contact.
+      example:
+        nonLatinName: nonLatinName
+        address:
+          city: city
+          countryCode: countryCode
+          postalCode: postalCode
+          addressLine1: addressLine1
+          addressLine2: addressLine2
+          stateOrProvinceCode: stateOrProvinceCode
+        name: name
+      properties:
+        name:
+          description: The full name of the seller's primary contact.
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        nonLatinName:
+          description: "The non-Latin script version of the primary contact's name,\
+            \ if applicable."
+          type: string
+      required:
+      - address
+      - name
+      type: object
+x-original-swagger-version: "2.0"

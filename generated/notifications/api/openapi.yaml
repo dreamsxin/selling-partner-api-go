@@ -1,0 +1,2628 @@
+openapi: 3.0.1
+info:
+  contact:
+    name: Selling Partner API Developer Support
+    url: https://sellercentral.amazon.com/gp/mws/contactus.html
+  description: |-
+    The Selling Partner API for Notifications lets you subscribe to notifications that are relevant to a selling partner's business. Using this API you can create a destination to receive notifications, subscribe to notifications, delete notification subscriptions, and more.
+
+    For more information, refer to the [Notifications Use Case Guide](https://developer-docs.amazon.com/sp-api/docs/notifications-api-v1-use-case-guide).
+  license:
+    name: Apache License 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  title: Selling Partner API for Notifications
+  version: v1
+servers:
+- url: https://sellingpartnerapi-na.amazon.com/
+paths:
+  /notifications/v1/subscriptions:
+    get:
+      description: |-
+        Returns information about subscriptions of the specified notification type. You can use this API to retrieve all subscriptions when multiple subscriptions exist for a notification type (for example, when using filter expressions).
+
+        The operation returns all subscriptions for the caller's party.
+
+        `payloadVersion` is an optional parameter. When you do not provide `payloadVersion`, the operation returns subscriptions across all payload versions.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 1 | 5 |
+
+        The `x-amzn-RateLimit-Limit` response header contains the usage plan rate limits for the operation, when available. The preceding table contains the default rate and burst values for this operation. Selling partners whose business demands require higher throughput might have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: getSubscriptions
+      parameters:
+      - description: |-
+          A list of notification types to retrieve subscriptions for. Currently limited to a single notification type per request.
+
+           For more information about notification types, refer to the [Notifications API v1 Use Case Guide](https://developer-docs.amazon.com/sp-api/docs/notifications-api-v1-use-case-guide).
+        explode: false
+        in: query
+        name: notificationTypes
+        required: true
+        schema:
+          items:
+            type: string
+          maxItems: 1
+          minItems: 1
+          type: array
+        style: form
+      - description: The version of the payload object to be used in the notification.
+        in: query
+        name: payloadVersion
+        schema:
+          type: string
+      - description: The maximum number of subscriptions to return per page. Minimum
+          value is 30. Maximum value is 100. Default is 30.
+        in: query
+        name: pageSize
+        schema:
+          default: 30
+          maximum: 100
+          minimum: 30
+          type: integer
+      - description: "A token to retrieve the next page of results. If this field\
+          \ is not empty in a response, pass its value in the next request to retrieve\
+          \ the next page."
+        in: query
+        name: nextToken
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionsResponse'
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  notificationTypes:
+                    value:
+                    - ANY_OFFER_CHANGED
+              response:
+                payload:
+                  subscriptions:
+                  - subscriptionId: 7fcacc7e-727b-11e9-8848-1681be663d3e
+                    payloadVersion: "1.0"
+                    destinationId: 3acafc7e-121b-1329-8ae8-1571be663aa2
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionsResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionsResponse'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionsResponse'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionsResponse'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionsResponse'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionsResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionsResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionsResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - notifications
+  /notifications/v1/subscriptions/{notificationType}:
+    get:
+      description: |-
+        Returns information about subscription of the specified notification type and payload version. `payloadVersion` is an optional parameter. When you do not provide `payloadVersion`, the operation returns the latest payload version subscription's information. You can use this API to get subscription information when you do not have a subscription identifier.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 1 | 5 |
+
+        The `x-amzn-RateLimit-Limit` response header contains the usage plan rate limits for the operation, when available. The preceding table contains the default rate and burst values for this operation. Selling partners whose business demands require higher throughput might have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: getSubscription
+      parameters:
+      - description: |-
+          The type of notification.
+
+           For more information about notification types, refer to the [Notifications API v1 Use Case Guide](https://developer-docs.amazon.com/sp-api/docs/notifications-api-v1-use-case-guide).
+        in: path
+        name: notificationType
+        required: true
+        schema:
+          type: string
+      - description: The version of the payload object to be used in the notification.
+        in: query
+        name: payloadVersion
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionResponse'
+            Successful Response:
+              example:
+                payload:
+                  subscriptionId: 7fcacc7e-727b-11e9-8848-1681be663d3e
+                  payloadVersion: "1.0"
+                  destinationId: 3acafc7e-121b-1329-8ae8-1571be663aa2
+                  processingDirective:
+                    eventFilter:
+                      marketplaceIds:
+                      - ATVPDKIKX0DER
+                      - A2EUQ1WTGCTBG2
+                      aggregationSettings:
+                        aggregationTimePeriod: FiveMinutes
+                      eventFilterType: ANY_OFFER_CHANGED
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response:
+                payload:
+                  subscriptionId: TEST_CASE_200_SUBSCRIPTION_ID
+                  payloadVersion: "1.0"
+                  destinationId: TEST_CASE_200_DESTINATION_ID
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionResponse'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionResponse'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionResponse'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionResponse'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - notifications
+      x-amzn-api-internal: INTERNAL_AND_EXTERNAL
+    post:
+      description: |-
+        Creates a subscription for the specified notification type to be delivered to the specified destination. Before you can subscribe, you must first create the destination by calling the `createDestination` operation. If the notification type that you specify supports multiple payload versions, you can use this operation to subscribe to a different payload version if you already have an existing subscription for a different payload version.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 1 | 5 |
+
+        The `x-amzn-RateLimit-Limit` response header contains the usage plan rate limits for the operation, when available. The preceding table contains the default rate and burst values for this operation. Selling partners whose business demands require higher throughput might have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: createSubscription
+      parameters:
+      - description: |-
+          The type of notification.
+
+           For more information about notification types, refer to the [Notifications API v1 Use Case Guide](https://developer-docs.amazon.com/sp-api/docs/notifications-api-v1-use-case-guide).
+        in: path
+        name: notificationType
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscriptionRequest'
+        description: The request schema for the `createSubscription` operation.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSubscriptionResponse'
+            Successful Response:
+              example:
+                payload:
+                  subscriptionId: 7fcacc7e-727b-11e9-8848-1681be663d3e
+                  payloadVersion: "1.0"
+                  destinationId: 3acafc7e-121b-1329-8ae8-1571be663aa2
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response:
+                payload:
+                  subscriptionId: TEST_CASE_200_SUBSCRIPTION_ID
+                  payloadVersion: "1.0"
+                  destinationId: TEST_CASE_200_DESTINATION_ID
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSubscriptionResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSubscriptionResponse'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSubscriptionResponse'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSubscriptionResponse'
+          description: The resource specified conflicts with the current state.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSubscriptionResponse'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSubscriptionResponse'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSubscriptionResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSubscriptionResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSubscriptionResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - notifications
+      x-amzn-api-internal: INTERNAL_AND_EXTERNAL
+      x-codegen-request-body-name: body
+  /notifications/v1/subscriptions/{notificationType}/{subscriptionId}:
+    delete:
+      description: |-
+        Deletes the subscription indicated by the subscription identifier and notification type that you specify. The subscription identifier can be for any subscription associated with your application. After you successfully call this operation, notifications will stop being sent for the associated subscription. The `deleteSubscriptionById` operation is grantless. For more information, refer to [Grantless Operations](https://developer-docs.amazon.com/sp-api/docs/grantless-operations) in the Selling Partner API Developer Guide.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 1 | 5 |
+
+        The `x-amzn-RateLimit-Limit` response header contains the usage plan rate limits for the operation, when available. The preceding table contains the default rate and burst values for this operation. Selling partners whose business demands require higher throughput might have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: deleteSubscriptionById
+      parameters:
+      - description: The identifier for the subscription that you want to delete.
+        in: path
+        name: subscriptionId
+        required: true
+        schema:
+          type: string
+      - description: |-
+          The type of notification.
+
+           For more information about notification types, refer to the [Notifications API v1 Use Case Guide](https://developer-docs.amazon.com/sp-api/docs/notifications-api-v1-use-case-guide).
+        in: path
+        name: notificationType
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSubscriptionByIdResponse'
+            Successful Operation Response:
+              example: {}
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSubscriptionByIdResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSubscriptionByIdResponse'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSubscriptionByIdResponse'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSubscriptionByIdResponse'
+          description: The resource specified conflicts with the current state.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSubscriptionByIdResponse'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSubscriptionByIdResponse'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSubscriptionByIdResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSubscriptionByIdResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSubscriptionByIdResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - notifications
+    get:
+      description: |-
+        Returns information about a subscription for the specified notification type. The `getSubscriptionById` operation is grantless. For more information, refer to [Grantless Operations](https://developer-docs.amazon.com/sp-api/docs/grantless-operations) in the Selling Partner API Developer Guide.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 1 | 5 |
+
+        The `x-amzn-RateLimit-Limit` response header contains the usage plan rate limits for the operation, when available. The preceding table contains the default rate and burst values for this operation. Selling partners whose business demands require higher throughput might have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: getSubscriptionById
+      parameters:
+      - description: The identifier for the subscription that you want to get.
+        in: path
+        name: subscriptionId
+        required: true
+        schema:
+          type: string
+      - description: |-
+          The type of notification.
+
+           For more information about notification types, refer to the [Notifications API v1 Use Case Guide](https://developer-docs.amazon.com/sp-api/docs/notifications-api-v1-use-case-guide).
+        in: path
+        name: notificationType
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionByIdResponse'
+            Successful Response:
+              example:
+                payload:
+                  subscriptionId: 7fcacc7e-727b-11e9-8848-1681be663d3e
+                  payloadVersion: "1.0"
+                  destinationId: 3acafc7e-121b-1329-8ae8-1571be663aa2
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response:
+                payload:
+                  subscriptionId: TEST_CASE_200_SUBSCRIPTION_ID
+                  payloadVersion: "1.0"
+                  destinationId: TEST_CASE_200_DESTINATION_ID
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionByIdResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionByIdResponse'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionResponse'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionByIdResponse'
+          description: The resource specified conflicts with the current state.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionByIdResponse'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionByIdResponse'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionByIdResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionByIdResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriptionByIdResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - notifications
+  /notifications/v1/subscriptions/{notificationType}/testNotification:
+    post:
+      description: |-
+        Sends a mock notification of the specified type to your SQS. The `sendTestNotification` API is grantless. For more information, see "Grantless operations" in the Selling Partner API Developer Guide.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 1 | 5 |
+
+        For more information, see "Usage Plans and Rate Limits" in the Selling Partner API documentation. This is a sandbox-only operation and must be directed to a sandbox endpoint. Refer to [Selling Partner API sandbox](https://developer-docs.amazon.com/sp-api/docs/the-selling-partner-api-sandbox) for more information.
+      operationId: sendTestNotification
+      parameters:
+      - description: |-
+          The type of notification.
+
+           For more information about notification types, refer to the [Notifications API v1 Use Case Guide](https://developer-docs.amazon.com/sp-api/docs/notifications-api-v1-use-case-guide).
+        in: path
+        name: notificationType
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendTestNotificationRequest'
+        description: The request schema for the `sendTestNotification` operation.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTestNotificationResponse'
+            Successful Response:
+              example: {}
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTestNotificationResponse'
+            Response:
+              example:
+                errors:
+                - code: InvalidInput
+                  message: InvalidInput
+                  details: "Invalid Input, recheck that the AppId and DestinationId\
+                    \ are valid and DestinationId belongs to the application"
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTestNotificationResponse'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTestNotificationResponse'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTestNotificationResponse'
+          description: The resource specified conflicts with the current state.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTestNotificationResponse'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTestNotificationResponse'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTestNotificationResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTestNotificationResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTestNotificationResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - notifications
+      x-codegen-request-body-name: body
+    x-amzn-api-sandbox-only: true
+    x-amzn-api-sandbox:
+      dynamic: {}
+  /notifications/v1/destinations:
+    get:
+      description: |-
+        Returns information about all destinations. The `getDestinations` operation is grantless. For more information, refer to [Grantless Operations](https://developer-docs.amazon.com/sp-api/docs/grantless-operations) in the Selling Partner API Developer Guide.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 1 | 5 |
+
+        The `x-amzn-RateLimit-Limit` response header contains the usage plan rate limits for the operation, when available. The preceding table contains the default rate and burst values for this operation. Selling partners whose business demands require higher throughput might have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: getDestinations
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationsResponse'
+            Successful Response:
+              example:
+                payload:
+                - destinationId: 9e7a83ee-7730-11e9-8f9e-2a86e4085a59
+                  name: SQSDestination
+                  resource:
+                    sqs:
+                      arn: arn:aws:sqs:us-east-2:444455556666:queue1
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response:
+                payload:
+                - destinationId: TEST_CASE_200
+                  resource:
+                    sqs:
+                      arn: arn:aws:sqs:us-east-2:444455556666:queue1
+                  name: SQSDestination
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationsResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationsResponse'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationsResponse'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationsResponse'
+          description: The resource specified conflicts with the current state.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationsResponse'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationsResponse'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationsResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationsResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationsResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - notifications
+      x-amzn-api-internal: INTERNAL_AND_EXTERNAL
+    post:
+      description: |-
+        Creates a destination resource to receive notifications. The `createDestination` operation is grantless. For more information, refer to [Grantless Operations](https://developer-docs.amazon.com/sp-api/docs/grantless-operations) in the Selling Partner API Developer Guide.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 1 | 5 |
+
+        The `x-amzn-RateLimit-Limit` response header contains the usage plan rate limits for the operation, when available. The preceding table contains the default rate and burst values for this operation. Selling partners whose business demands require higher throughput might have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: createDestination
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDestinationRequest'
+        description: The request schema for the `createDestination` operation.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDestinationResponse'
+            Successful Response:
+              example:
+                payload:
+                  destinationId: 9e7a83ee-7730-11e9-8f9e-2a86e4085a59
+                  resource:
+                    sqs:
+                      arn: arn:aws:sqs:us-east-2:444455556666:queue1
+                  name: SQSDestination
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response:
+                payload:
+                  destinationId: TEST_CASE_200_DESTINATION_ID
+                  resource:
+                    sqs:
+                      arn: arn:aws:sqs:us-east-2:444455556666:queue1
+                  name: SQSDestination
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDestinationResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDestinationResponse'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDestinationResponse'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDestinationResponse'
+          description: The resource specified conflicts with the current state.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDestinationResponse'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDestinationResponse'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDestinationResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDestinationResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDestinationResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - notifications
+      x-amzn-api-internal: INTERNAL_AND_EXTERNAL
+      x-codegen-request-body-name: body
+  /notifications/v1/destinations/{destinationId}:
+    delete:
+      description: |-
+        Deletes the destination that you specify. The `deleteDestination` operation is grantless. For more information, refer to [Grantless Operations](https://developer-docs.amazon.com/sp-api/docs/grantless-operations) in the Selling Partner API Developer Guide.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 1 | 5 |
+
+        The `x-amzn-RateLimit-Limit` response header contains the usage plan rate limits for the operation, when available. The preceding table contains the default rate and burst values for this operation. Selling partners whose business demands require higher throughput might have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: deleteDestination
+      parameters:
+      - description: The identifier for the destination that you want to delete.
+        in: path
+        name: destinationId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteDestinationResponse'
+            Successful Response:
+              example: {}
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response: {}
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteDestinationResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteDestinationResponse'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteDestinationResponse'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteDestinationResponse'
+          description: The resource specified conflicts with the current state.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteDestinationResponse'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteDestinationResponse'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteDestinationResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteDestinationResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteDestinationResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - notifications
+      x-amzn-api-internal: INTERNAL_AND_EXTERNAL
+    get:
+      description: |-
+        Returns information about the destination that you specify. The `getDestination` operation is grantless. For more information, refer to [Grantless Operations](https://developer-docs.amazon.com/sp-api/docs/grantless-operations) in the Selling Partner API Developer Guide.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 1 | 5 |
+
+        The `x-amzn-RateLimit-Limit` response header contains the usage plan rate limits for the operation, when available. The preceding table contains the default rate and burst values for this operation. Selling partners whose business demands require higher throughput might have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: getDestination
+      parameters:
+      - description: The identifier generated when you created the destination.
+        in: path
+        name: destinationId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationResponse'
+            Successful Response:
+              example:
+                payload:
+                  destinationId: 9e7a83ee-7730-11e9-8f9e-2a86e4085a59
+                  name: SQSDestination
+                  resource:
+                    sqs:
+                      arn: arn:aws:sqs:us-east-2:444455556666:queue1
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters: {}
+              response:
+                payload:
+                  destinationId: TEST_CASE_200_DESTINATION
+                  resource:
+                    sqs:
+                      arn: arn:aws:sqs:us-east-2:444455556666:queue1
+                  name: SQSDestination
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationResponse'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationResponse'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationResponse'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationResponse'
+          description: The resource specified conflicts with the current state.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationResponse'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationResponse'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationResponse'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationResponse'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDestinationResponse'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+      tags:
+      - notifications
+      x-amzn-api-internal: INTERNAL_AND_EXTERNAL
+components:
+  schemas:
+    ProcessingDirective:
+      description: "Additional information passed to the subscription to control the\
+        \ processing of notifications. For example, you can use an `eventFilter` to\
+        \ customize your subscription to send notifications for only the `marketplaceId`s\
+        \ that you specify, or select the aggregation time period at which to send\
+        \ notifications (for example, you can set a limit of one notification every\
+        \ five minutes for high frequency notifications). You can also use `filterExpression`\
+        \ to filter events based on notification payload. The specific features available\
+        \ can vary by the `notificationType`."
+      example:
+        eventFilter:
+          marketplaceIds:
+          - marketplaceIds
+          - marketplaceIds
+          trackingIdentifier:
+            aftn: aftn
+            acsin: acsin
+            containerNumber: containerNumber
+            carrierTracking:
+              carrierCode: carrierCode
+              trackingNumber: trackingNumber
+            id: id
+            houseBillOfLadingNumber: houseBillOfLadingNumber
+          orderChangeTypes:
+          - BuyerRequestedChange
+          - BuyerRequestedChange
+          aggregationSettings:
+            aggregationTimePeriod: FiveMinutes
+          eventFilterType: ANY_OFFER_CHANGED
+        filterExpression: filterExpression
+      properties:
+        eventFilter:
+          $ref: '#/components/schemas/EventFilter'
+        filterExpression:
+          description: "An expression for filtering events before delivery to destination\
+            \ based on the notification payload (example: FulfillmentOrderStatusNotification.FulfillmentOrderStatus\
+            \ == `SHIPPED` ). The `filterExpression` is a string that follows the\
+            \ CEL expression syntax (https://github.com/google/cel-spec) excluding\
+            \ arithmetic operators (+, -, *, /, %) and list/map indexing ([]). Refer\
+            \ to Notification Type Values to determine if filter Expression is supported\
+            \ for a Notification Type. Refer to CEL Operators (https://developer-docs.amazon.com/sp-api/docs/filter-notification-subscriptions)\
+            \ to see if a CEL operator is supported. \n Note: eventFilter and filterExpression\
+            \ are mutually exclusive. You can use filterExpression to replace existing\
+            \ eventFilter configurations."
+          maxLength: 256
+          minLength: 1
+          type: string
+      type: object
+    EventFilter:
+      allOf:
+      - $ref: '#/components/schemas/AggregationFilter'
+      - $ref: '#/components/schemas/MarketplaceFilter'
+      - $ref: '#/components/schemas/OrderChangeTypeFilter'
+      - $ref: '#/components/schemas/TrackingFilter'
+      - properties:
+          eventFilterType:
+            description: "An `eventFilterType` value that the `notificationType` supports.\
+              \ The subscription service uses the `eventFilterType` to determine the\
+              \ type of event filter. To determine if a specific `notificationType`\
+              \ supports an `eventFilterType`, refer to [Notification Type Values](\
+              \ https://developer-docs.amazon.com/sp-api/docs/notification-type-values)."
+            enum:
+            - ANY_OFFER_CHANGED
+            - ORDER_CHANGE
+            - SHIPMENT_TRACKING_MILESTONE_CHANGED
+            type: string
+        required:
+        - eventFilterType
+        type: object
+      description: A `notificationType` filter. This object contains all of the available
+        filters and properties that you can use to define a `notificationType` specific
+        filter.
+      example:
+        marketplaceIds:
+        - marketplaceIds
+        - marketplaceIds
+        trackingIdentifier:
+          aftn: aftn
+          acsin: acsin
+          containerNumber: containerNumber
+          carrierTracking:
+            carrierCode: carrierCode
+            trackingNumber: trackingNumber
+          id: id
+          houseBillOfLadingNumber: houseBillOfLadingNumber
+        orderChangeTypes:
+        - BuyerRequestedChange
+        - BuyerRequestedChange
+        aggregationSettings:
+          aggregationTimePeriod: FiveMinutes
+        eventFilterType: ANY_OFFER_CHANGED
+    TrackingFilter:
+      description: An event filter you can use to customize your subscription to receive
+        shipment tracking milestone notifications for a specific tracking identifier.
+      properties:
+        trackingIdentifier:
+          $ref: '#/components/schemas/TrackingIdentifier'
+      type: object
+    TrackingIdentifier:
+      description: Specifies the tracking identifier used to filter your subscription
+        notifications. Provide exactly one identifier field. Providing multiple identifier
+        fields in a single request is not supported.
+      example:
+        aftn: aftn
+        acsin: acsin
+        containerNumber: containerNumber
+        carrierTracking:
+          carrierCode: carrierCode
+          trackingNumber: trackingNumber
+        id: id
+        houseBillOfLadingNumber: houseBillOfLadingNumber
+      properties:
+        id:
+          description: Amazon unique tracking identifier.
+          type: string
+        acsin:
+          description: Air Cargo Shipment Identification Number.
+          type: string
+        aftn:
+          description: Amazon Fulfillment Tracking Number.
+          type: string
+        containerNumber:
+          description: Container number provided by the Logistics Service Provider.
+          type: string
+        houseBillOfLadingNumber:
+          description: House Bill of Lading number.
+          type: string
+        carrierTracking:
+          $ref: '#/components/schemas/TrackingIdentifier_carrierTracking'
+      type: object
+    MarketplaceFilter:
+      description: An event filter you can use to customize your subscription to send
+        notifications for specific `marketplaceId`s.
+      properties:
+        marketplaceIds:
+          description: "A list of marketplace identifiers you can subscribe to (for\
+            \ example, `ATVPDKIKX0DER`). To receive notifications in every marketplace,\
+            \ do not provide this list."
+          items:
+            type: string
+          type: array
+      type: object
+    MarketplaceIds:
+      description: "A list of marketplace identifiers you can subscribe to (for example,\
+        \ `ATVPDKIKX0DER`). To receive notifications in every marketplace, do not\
+        \ provide this list."
+      items:
+        type: string
+      type: array
+    AggregationFilter:
+      description: "A filter you can use to select the aggregation time period at\
+        \ which to send notifications (for example, limit to one notification every\
+        \ five minutes for high frequency notifications)."
+      properties:
+        aggregationSettings:
+          $ref: '#/components/schemas/AggregationSettings'
+      type: object
+    AggregationSettings:
+      description: A container that holds all of the necessary properties to configure
+        the aggregation of notifications.
+      example:
+        aggregationTimePeriod: FiveMinutes
+      properties:
+        aggregationTimePeriod:
+          $ref: '#/components/schemas/AggregationTimePeriod'
+      required:
+      - aggregationTimePeriod
+      type: object
+    AggregationTimePeriod:
+      description: "The supported aggregation time periods. For example, if FiveMinutes\
+        \ is the value chosen, and 50 price updates occur for an ASIN within 5 minutes,\
+        \ Amazon will send only two notifications; one for the first event, and then\
+        \ a subsequent notification 5 minutes later with the final end state of the\
+        \ data. The 48 interim events will be dropped."
+      enum:
+      - FiveMinutes
+      - TenMinutes
+      type: string
+      x-docgen-enum-table-extension:
+      - value: FiveMinutes
+        description: An aggregated notification will be sent every five minutes.
+      - value: TenMinutes
+        description: An aggregated notification will be sent every ten minutes.
+    OrderChangeTypeFilter:
+      description: An event filter you can use to customize your subscription to send
+        notifications for a specific `orderChangeType`.
+      properties:
+        orderChangeTypes:
+          description: "A list of order change types you can subscribe to (for example,\
+            \ `BuyerRequestedChange`). To receive notifications of all change types,\
+            \ do not provide this list."
+          items:
+            $ref: '#/components/schemas/OrderChangeTypeEnum'
+          type: array
+      type: object
+    OrderChangeTypes:
+      description: "A list of order change types you can subscribe to (for example,\
+        \ `BuyerRequestedChange`). To receive notifications of all change types, do\
+        \ not provide this list."
+      items:
+        $ref: '#/components/schemas/OrderChangeTypeEnum'
+      type: array
+    OrderChangeTypeEnum:
+      description: The supported order change type of ORDER_CHANGE notification.
+      enum:
+      - BuyerRequestedChange
+      - DeliveryTipChange
+      - OrderStatusChange
+      type: string
+    Subscription:
+      description: Information about the subscription.
+      example:
+        payloadVersion: payloadVersion
+        subscriptionId: subscriptionId
+        destinationId: destinationId
+        processingDirective:
+          eventFilter:
+            marketplaceIds:
+            - marketplaceIds
+            - marketplaceIds
+            trackingIdentifier:
+              aftn: aftn
+              acsin: acsin
+              containerNumber: containerNumber
+              carrierTracking:
+                carrierCode: carrierCode
+                trackingNumber: trackingNumber
+              id: id
+              houseBillOfLadingNumber: houseBillOfLadingNumber
+            orderChangeTypes:
+            - BuyerRequestedChange
+            - BuyerRequestedChange
+            aggregationSettings:
+              aggregationTimePeriod: FiveMinutes
+            eventFilterType: ANY_OFFER_CHANGED
+          filterExpression: filterExpression
+      properties:
+        subscriptionId:
+          description: The subscription identifier generated when the subscription
+            is created.
+          type: string
+        payloadVersion:
+          description: The version of the payload object to be used in the notification.
+          type: string
+        destinationId:
+          description: The identifier for the destination where notifications will
+            be delivered.
+          type: string
+        processingDirective:
+          $ref: '#/components/schemas/ProcessingDirective'
+      required:
+      - destinationId
+      - payloadVersion
+      - subscriptionId
+      type: object
+    CreateSubscriptionResponse:
+      description: The response schema for the `createSubscription` operation.
+      example:
+        payload:
+          payloadVersion: payloadVersion
+          subscriptionId: subscriptionId
+          destinationId: destinationId
+          processingDirective:
+            eventFilter:
+              marketplaceIds:
+              - marketplaceIds
+              - marketplaceIds
+              trackingIdentifier:
+                aftn: aftn
+                acsin: acsin
+                containerNumber: containerNumber
+                carrierTracking:
+                  carrierCode: carrierCode
+                  trackingNumber: trackingNumber
+                id: id
+                houseBillOfLadingNumber: houseBillOfLadingNumber
+              orderChangeTypes:
+              - BuyerRequestedChange
+              - BuyerRequestedChange
+              aggregationSettings:
+                aggregationTimePeriod: FiveMinutes
+              eventFilterType: ANY_OFFER_CHANGED
+            filterExpression: filterExpression
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        payload:
+          $ref: '#/components/schemas/Subscription'
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    CreateSubscriptionRequest:
+      description: The request schema for the `createSubscription` operation.
+      example:
+        payloadVersion: payloadVersion
+        destinationId: destinationId
+        processingDirective:
+          eventFilter:
+            marketplaceIds:
+            - marketplaceIds
+            - marketplaceIds
+            trackingIdentifier:
+              aftn: aftn
+              acsin: acsin
+              containerNumber: containerNumber
+              carrierTracking:
+                carrierCode: carrierCode
+                trackingNumber: trackingNumber
+              id: id
+              houseBillOfLadingNumber: houseBillOfLadingNumber
+            orderChangeTypes:
+            - BuyerRequestedChange
+            - BuyerRequestedChange
+            aggregationSettings:
+              aggregationTimePeriod: FiveMinutes
+            eventFilterType: ANY_OFFER_CHANGED
+          filterExpression: filterExpression
+      properties:
+        payloadVersion:
+          description: The version of the payload object to be used in the notification.
+          type: string
+        destinationId:
+          description: The identifier for the destination where notifications will
+            be delivered.
+          type: string
+        processingDirective:
+          $ref: '#/components/schemas/ProcessingDirective'
+      required:
+      - destinationId
+      - payloadVersion
+      type: object
+    GetSubscriptionByIdResponse:
+      description: The response schema for the `getSubscriptionById` operation.
+      example:
+        payload:
+          payloadVersion: payloadVersion
+          subscriptionId: subscriptionId
+          destinationId: destinationId
+          processingDirective:
+            eventFilter:
+              marketplaceIds:
+              - marketplaceIds
+              - marketplaceIds
+              trackingIdentifier:
+                aftn: aftn
+                acsin: acsin
+                containerNumber: containerNumber
+                carrierTracking:
+                  carrierCode: carrierCode
+                  trackingNumber: trackingNumber
+                id: id
+                houseBillOfLadingNumber: houseBillOfLadingNumber
+              orderChangeTypes:
+              - BuyerRequestedChange
+              - BuyerRequestedChange
+              aggregationSettings:
+                aggregationTimePeriod: FiveMinutes
+              eventFilterType: ANY_OFFER_CHANGED
+            filterExpression: filterExpression
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        payload:
+          $ref: '#/components/schemas/Subscription'
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    GetSubscriptionResponse:
+      description: The response schema for the `getSubscription` operation.
+      example:
+        payload:
+          payloadVersion: payloadVersion
+          subscriptionId: subscriptionId
+          destinationId: destinationId
+          processingDirective:
+            eventFilter:
+              marketplaceIds:
+              - marketplaceIds
+              - marketplaceIds
+              trackingIdentifier:
+                aftn: aftn
+                acsin: acsin
+                containerNumber: containerNumber
+                carrierTracking:
+                  carrierCode: carrierCode
+                  trackingNumber: trackingNumber
+                id: id
+                houseBillOfLadingNumber: houseBillOfLadingNumber
+              orderChangeTypes:
+              - BuyerRequestedChange
+              - BuyerRequestedChange
+              aggregationSettings:
+                aggregationTimePeriod: FiveMinutes
+              eventFilterType: ANY_OFFER_CHANGED
+            filterExpression: filterExpression
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        payload:
+          $ref: '#/components/schemas/Subscription'
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    GetSubscriptionsResponse:
+      description: The response schema for the `getSubscriptions` operation.
+      example:
+        payload:
+          subscriptions:
+          - payloadVersion: payloadVersion
+            subscriptionId: subscriptionId
+            destinationId: destinationId
+            processingDirective:
+              eventFilter:
+                marketplaceIds:
+                - marketplaceIds
+                - marketplaceIds
+                trackingIdentifier:
+                  aftn: aftn
+                  acsin: acsin
+                  containerNumber: containerNumber
+                  carrierTracking:
+                    carrierCode: carrierCode
+                    trackingNumber: trackingNumber
+                  id: id
+                  houseBillOfLadingNumber: houseBillOfLadingNumber
+                orderChangeTypes:
+                - BuyerRequestedChange
+                - BuyerRequestedChange
+                aggregationSettings:
+                  aggregationTimePeriod: FiveMinutes
+                eventFilterType: ANY_OFFER_CHANGED
+              filterExpression: filterExpression
+          - payloadVersion: payloadVersion
+            subscriptionId: subscriptionId
+            destinationId: destinationId
+            processingDirective:
+              eventFilter:
+                marketplaceIds:
+                - marketplaceIds
+                - marketplaceIds
+                trackingIdentifier:
+                  aftn: aftn
+                  acsin: acsin
+                  containerNumber: containerNumber
+                  carrierTracking:
+                    carrierCode: carrierCode
+                    trackingNumber: trackingNumber
+                  id: id
+                  houseBillOfLadingNumber: houseBillOfLadingNumber
+                orderChangeTypes:
+                - BuyerRequestedChange
+                - BuyerRequestedChange
+                aggregationSettings:
+                  aggregationTimePeriod: FiveMinutes
+                eventFilterType: ANY_OFFER_CHANGED
+              filterExpression: filterExpression
+          nextToken: nextToken
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        payload:
+          $ref: '#/components/schemas/GetSubscriptionsPayload'
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    GetSubscriptionsPayload:
+      description: The payload for the `getSubscriptions` operation.
+      example:
+        subscriptions:
+        - payloadVersion: payloadVersion
+          subscriptionId: subscriptionId
+          destinationId: destinationId
+          processingDirective:
+            eventFilter:
+              marketplaceIds:
+              - marketplaceIds
+              - marketplaceIds
+              trackingIdentifier:
+                aftn: aftn
+                acsin: acsin
+                containerNumber: containerNumber
+                carrierTracking:
+                  carrierCode: carrierCode
+                  trackingNumber: trackingNumber
+                id: id
+                houseBillOfLadingNumber: houseBillOfLadingNumber
+              orderChangeTypes:
+              - BuyerRequestedChange
+              - BuyerRequestedChange
+              aggregationSettings:
+                aggregationTimePeriod: FiveMinutes
+              eventFilterType: ANY_OFFER_CHANGED
+            filterExpression: filterExpression
+        - payloadVersion: payloadVersion
+          subscriptionId: subscriptionId
+          destinationId: destinationId
+          processingDirective:
+            eventFilter:
+              marketplaceIds:
+              - marketplaceIds
+              - marketplaceIds
+              trackingIdentifier:
+                aftn: aftn
+                acsin: acsin
+                containerNumber: containerNumber
+                carrierTracking:
+                  carrierCode: carrierCode
+                  trackingNumber: trackingNumber
+                id: id
+                houseBillOfLadingNumber: houseBillOfLadingNumber
+              orderChangeTypes:
+              - BuyerRequestedChange
+              - BuyerRequestedChange
+              aggregationSettings:
+                aggregationTimePeriod: FiveMinutes
+              eventFilterType: ANY_OFFER_CHANGED
+            filterExpression: filterExpression
+        nextToken: nextToken
+      properties:
+        subscriptions:
+          description: A list of subscriptions.
+          items:
+            $ref: '#/components/schemas/Subscription'
+          type: array
+        nextToken:
+          description: "A token that you can use to retrieve the next page of results.\
+            \ When this field is not empty, pass its value in the `nextToken` query\
+            \ parameter of the next request."
+          type: string
+      type: object
+    Subscriptions:
+      description: A list of subscriptions.
+      items:
+        $ref: '#/components/schemas/Subscription'
+      type: array
+    DeleteSubscriptionByIdResponse:
+      description: The response schema for the `deleteSubscriptionById` operation.
+      example:
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    SendTestNotificationRequest:
+      description: The request schema for the `sendTestNotification` operation.
+      example:
+        testNotification:
+          payloadVersion: payloadVersion
+          testScenario: testScenario
+        destinationId: destinationId
+      properties:
+        destinationId:
+          description: The identifier for the destination where notifications will
+            be delivered.
+          type: string
+        testNotification:
+          $ref: '#/components/schemas/TestNotification'
+      type: object
+    SendTestNotificationResponse:
+      description: The response schema for the `sendTestNotification` operation.
+      example:
+        payload: "{}"
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        payload:
+          description: The payload for the `sendTestNotification` operation.
+          type: object
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    DestinationList:
+      description: A list of destinations.
+      items:
+        $ref: '#/components/schemas/Destination'
+      type: array
+    Destination:
+      description: Information about the destination you create when you call the
+        `createDestination` operation.
+      example:
+        resource:
+          eventBridge:
+            accountId: accountId
+            name: name
+            region: region
+          sqs:
+            arn: arn
+        name: name
+        destinationId: destinationId
+      properties:
+        name:
+          description: The developer-defined name for this destination.
+          maxLength: 256
+          type: string
+        destinationId:
+          description: The destination identifier generated when you created the destination.
+          type: string
+        resource:
+          $ref: '#/components/schemas/DestinationResource'
+      required:
+      - destinationId
+      - name
+      - resource
+      type: object
+    DestinationResource:
+      description: The destination resource types.
+      example:
+        eventBridge:
+          accountId: accountId
+          name: name
+          region: region
+        sqs:
+          arn: arn
+      properties:
+        sqs:
+          $ref: '#/components/schemas/SqsResource'
+        eventBridge:
+          $ref: '#/components/schemas/EventBridgeResource'
+      type: object
+    DestinationResourceSpecification:
+      description: The information required to create a destination resource. Applications
+        should use one resource type (sqs or eventBridge) per destination.
+      example:
+        eventBridge:
+          accountId: accountId
+          region: region
+        sqs:
+          arn: arn
+      properties:
+        sqs:
+          $ref: '#/components/schemas/SqsResource'
+        eventBridge:
+          $ref: '#/components/schemas/EventBridgeResourceSpecification'
+      type: object
+    SqsResource:
+      description: The information required to create an Amazon Simple Queue Service
+        (Amazon SQS) queue destination.
+      example:
+        arn: arn
+      properties:
+        arn:
+          description: The Amazon Resource Name (ARN) associated with the SQS queue.
+          maxLength: 1000
+          pattern: ^arn:aws:sqs:\S+:\S+:\S+
+          type: string
+      required:
+      - arn
+      type: object
+    EventBridgeResourceSpecification:
+      description: The information required to create an Amazon EventBridge destination.
+      example:
+        accountId: accountId
+        region: region
+      properties:
+        region:
+          description: The AWS region in which you will be receiving the notifications.
+          type: string
+        accountId:
+          description: The identifier for the AWS account that is responsible for
+            charges related to receiving notifications.
+          type: string
+      required:
+      - accountId
+      - region
+      type: object
+    EventBridgeResource:
+      description: The Amazon EventBridge destination.
+      example:
+        accountId: accountId
+        name: name
+        region: region
+      properties:
+        name:
+          description: The name of the partner event source associated with the destination.
+          maxLength: 256
+          type: string
+        region:
+          description: "The AWS region in which you receive the notifications. For\
+            \ AWS regions that Amazon EventBridge supports, refer to [Amazon EventBridge\
+            \ endpoints and quotas](https://docs.aws.amazon.com/general/latest/gr/ev.html)."
+          type: string
+        accountId:
+          description: The identifier for the AWS account that is responsible for
+            charges related to receiving notifications.
+          type: string
+      required:
+      - accountId
+      - name
+      - region
+      type: object
+    CreateDestinationRequest:
+      description: The request schema for the `createDestination` operation.
+      example:
+        resourceSpecification:
+          eventBridge:
+            accountId: accountId
+            region: region
+          sqs:
+            arn: arn
+        name: name
+      properties:
+        resourceSpecification:
+          $ref: '#/components/schemas/DestinationResourceSpecification'
+        name:
+          description: A developer-defined name to help identify this destination.
+          type: string
+      required:
+      - name
+      - resourceSpecification
+      type: object
+    CreateDestinationResponse:
+      description: The response schema for the createDestination operation.
+      example:
+        payload:
+          resource:
+            eventBridge:
+              accountId: accountId
+              name: name
+              region: region
+            sqs:
+              arn: arn
+          name: name
+          destinationId: destinationId
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        payload:
+          $ref: '#/components/schemas/Destination'
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    GetDestinationResponse:
+      description: The response schema for the `getDestination` operation.
+      example:
+        payload:
+          resource:
+            eventBridge:
+              accountId: accountId
+              name: name
+              region: region
+            sqs:
+              arn: arn
+          name: name
+          destinationId: destinationId
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        payload:
+          $ref: '#/components/schemas/Destination'
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    GetDestinationsResponse:
+      description: The response schema for the `getDestinations` operation.
+      example:
+        payload:
+        - resource:
+            eventBridge:
+              accountId: accountId
+              name: name
+              region: region
+            sqs:
+              arn: arn
+          name: name
+          destinationId: destinationId
+        - resource:
+            eventBridge:
+              accountId: accountId
+              name: name
+              region: region
+            sqs:
+              arn: arn
+          name: name
+          destinationId: destinationId
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        payload:
+          description: A list of destinations.
+          items:
+            $ref: '#/components/schemas/Destination'
+          type: array
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    DeleteDestinationResponse:
+      description: The response schema for the `deleteDestination` operation.
+      example:
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        errors:
+          description: A list of error responses returned when a request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      type: object
+    ErrorList:
+      description: A list of error responses returned when a request is unsuccessful.
+      items:
+        $ref: '#/components/schemas/Error'
+      type: array
+    Error:
+      description: An error response returned when the request is unsuccessful.
+      example:
+        code: code
+        details: details
+        message: message
+      properties:
+        code:
+          description: An error code that identifies the type of error that occurred.
+          type: string
+        message:
+          description: A message that describes the error condition.
+          type: string
+        details:
+          description: Additional details that can help the caller understand or fix
+            the issue.
+          type: string
+      required:
+      - code
+      - message
+      type: object
+    TestNotification:
+      description: The describer for the test notification that will be delivered.
+      example:
+        payloadVersion: payloadVersion
+        testScenario: testScenario
+      properties:
+        payloadVersion:
+          description: The version of the payload object to be used in the notification.
+          type: string
+        testScenario:
+          description: "The scenario of the specified notification to be used in the\
+            \ notification payload. If testScenario is empty, a 400 response will\
+            \ be returned back to the developer. The scenarios supported for each\
+            \ notification type can be found in the Selling Partner API Developer\
+            \ Guide."
+          type: string
+      required:
+      - payloadVersion
+      type: object
+    TrackingIdentifier_carrierTracking:
+      description: Carrier-provided tracking identifier.
+      example:
+        carrierCode: carrierCode
+        trackingNumber: trackingNumber
+      properties:
+        trackingNumber:
+          description: Carrier tracking number
+          type: string
+        carrierCode:
+          description: Carrier code
+          type: string
+      required:
+      - trackingNumber
+      type: object
+x-original-swagger-version: "2.0"

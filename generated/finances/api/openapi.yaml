@@ -1,0 +1,1826 @@
+openapi: 3.0.1
+info:
+  contact:
+    name: Selling Partner API Developer Support
+    url: https://sellercentral.amazon.com/gp/mws/contactus.html
+  description: The Selling Partner API for Finances provides financial information
+    relevant to a seller's business. You can obtain financial events for a given order
+    or date range without having to wait until a statement period closes.
+  license:
+    name: Apache License 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
+  title: The Selling Partner API for Finances
+  version: 2024-06-19
+servers:
+- url: https://sellingpartnerapi-na.amazon.com/
+paths:
+  /finances/2024-06-19/transactions:
+    get:
+      description: |-
+        Returns transactions for the given parameters. Financial events might not include orders from the last 48 hours. **Note:** If you want to retrieve MFN orders in the US store, do not supply the `marketplaceId` parameter.
+
+        **Usage plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.5 | 10 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that were applied to the requested operation, when available. The preceding table contains the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits).
+      operationId: listTransactions
+      parameters:
+      - description: |-
+          The response includes financial events posted on or after this date. This date must be in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601) date-time format. The date-time must be more than two minutes before the time of the request.
+
+          This field is required if you do not specify a related identifier.
+        example: 2023-01-12
+        in: query
+        name: postedAfter
+        schema:
+          format: date-time
+          type: string
+      - description: |-
+          The response includes financial events posted before (but not on) this date. This date must be in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601) date-time format.
+
+          The date-time must be later than `PostedAfter` and more than two minutes before the request was submitted. If `PostedAfter` and `PostedBefore` are more than 180 days apart, the response is empty.
+
+          **Default:** Two minutes before the time of the request.
+        example: 2023-02-12
+        in: query
+        name: postedBefore
+        schema:
+          format: date-time
+          type: string
+      - description: "The identifier of the marketplace from which you want to retrieve\
+          \ transactions. The marketplace ID is the globally unique identifier of\
+          \ a marketplace. To find the ID for a marketplace, refer to [Marketplace\
+          \ IDs](https://developer-docs.amazon.com/sp-api/docs/marketplace-ids)."
+        example: ATIV93840DER
+        in: query
+        name: marketplaceId
+        schema:
+          type: string
+      - description: |-
+          The status of the transaction.
+
+          **Possible values:**
+
+          * `DEFERRED`: the transaction is currently deferred.
+          * `RELEASED`: the transaction is currently released.
+          * `DEFERRED_RELEASED`: the transaction was deferred in the past, but is now released. The status of a deferred transaction is updated to `DEFERRED_RELEASED` when the transaction is released.
+        example: RELEASED
+        in: query
+        name: transactionStatus
+        schema:
+          type: string
+      - description: "The name of the `relatedIdentifier`.\n\n**Possible values:**\n\
+          \n* `FINANCIAL_EVENT_GROUP_ID`: the financial event group ID associated\
+          \ with the transaction.\n\n* `ORDER_ID`: the order ID associated with the\
+          \ transaction.  \n\n**Note:**\n\n`FINANCIAL_EVENT_GROUP_ID` and `ORDER_ID`\
+          \ are the only `relatedIdentifier` with filtering capabilities at the moment.\
+          \ While other `relatedIdentifier` values will be included in the response\
+          \ when available, they cannot be used for filtering purposes."
+        example: FINANCIAL_EVENT_GROUP_ID
+        in: query
+        name: relatedIdentifierName
+        schema:
+          type: string
+      - description: The value of the `relatedIdentifier`.
+        example: "8129762527551"
+        in: query
+        name: relatedIdentifierValue
+        schema:
+          type: string
+      - description: "The response includes `nextToken` when the number of results\
+          \ exceeds the specified `pageSize` value. To get the next page of results,\
+          \ call the operation with this token and include the same arguments as the\
+          \ call that produced the token. To get a complete list, call this operation\
+          \ until `nextToken` is null. Note that this operation can return empty pages."
+        example: jehgri34yo7jr9e8f984tr9i4o
+        in: query
+        name: nextToken
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTransactionsResponse'
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  postedAfter:
+                    value: 2023-03-07
+                  nextToken:
+                    value: jehgri34yo7jr9e8f984tr9i4o
+              response:
+                payload:
+                  nextToken: Next token value
+                  transactions:
+                  - sellingPartnerMetadata:
+                      sellingPartnerId: A3TH9S8BH6GOGM
+                      accountType: PAYABLE
+                      marketplaceId: ATIV93840DER
+                    relatedIdentifiers:
+                    - relatedIdentifierName: FINANCIAL_EVENT_GROUP_ID
+                      relatedIdentifierValue: 4MVaHcsAfaYAlwlaPWrXJxrfUiKfYZ2ooWtY7528FUA
+                    - relatedIdentifierName: ORDER_ID
+                      relatedIdentifierValue: "8129762527551"
+                    transactionType: Shipment
+                    postedDate: 2020-07-14T03:35:13.214Z
+                    totalAmount:
+                      currencyAmount: 10
+                      currencyCode: USD
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  postedBefore:
+                    value: 2022-03-07
+              response:
+                errors:
+                - code: InvalidInput
+                  message: Start date cannot be null
+                  details: Start date cannot be null
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+  /finances/2024-06-19/balances:
+    get:
+      description: |-
+        Retrieve a balance. This balance can be a past balances at a specified date, or a current balance. Sub-balances are listed by account type and marketplace.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.5 | 10 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that apply to the operation, when available. The preceding table indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: listBalances
+      parameters:
+      - description: "The marketplaces from which to retrieve balances. If omitted,\
+          \ balances from all applicable marketplaces may be returned. To find the\
+          \ marketplace ID for a region, refer to [Marketplace IDs](https://developer-docs.amazon.com/sp-api/docs/marketplace-ids)."
+        example:
+        - AXXXXXXXXXER
+        explode: false
+        in: query
+        name: marketplaceIds
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: |-
+          The type of balance to include in the response. If omitted, all balance types may be included in the response.
+
+          **Possible values:** `AVAILABLE`, `RESERVED`, `TOTAL`, `DEFERRED`, `ACCOUNT_LEVEL_RESERVE`
+        example: TOTAL
+        in: query
+        name: balanceType
+        schema:
+          type: string
+      - description: The type of account to include in the response.
+        example: Standard Orders
+        in: query
+        name: accountType
+        schema:
+          type: string
+      - description: "The date from which you want to retrieve balances. If provided,\
+          \ the response includes historical balances at the specified date. The value\
+          \ must be in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601)\
+          \ date format. If omitted, the point in time balance is provided."
+        example: 2025-01-12
+        in: query
+        name: asOfDate
+        schema:
+          format: date
+          type: string
+      - description: "A token that you use to retrieve subsequent pages of results.\
+          \ When there are more than 500 results available, the response will include\
+          \ a `nextToken` value. To get the next page of results, call the operation\
+          \ with this token and include the same arguments as the call that produced\
+          \ the token. Repeat this process until the `nextToken` value is null to\
+          \ retrieve all results."
+        example: jehgri34yo7jr9e8f984tr9i4o
+        in: query
+        name: nextToken
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBalancesResponse'
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  marketplaceIds:
+                    value:
+                    - AXXXXXXXXXER
+                  balanceType:
+                    value: TOTAL
+              response:
+                balances:
+                - partnerMetadata:
+                    partnerId: XXXXXXXXXXXXXX
+                    accountType: Standard Orders
+                    marketplaceId: AXXXXXXXXXER
+                  balanceType: TOTAL
+                  amount:
+                    currencyAmount: 15000
+                    currencyCode: USD
+                  lastUpdatedTime: 2025-01-12T10:30:00+09:00
+                  balances:
+                  - balanceType: AVAILABLE
+                    amount:
+                      currencyAmount: 8000
+                      currencyCode: USD
+                  - balanceType: RESERVED
+                    amount:
+                      currencyAmount: 7000
+                      currencyCode: USD
+                    balances:
+                    - balanceType: DEFERRED
+                      amount:
+                        currencyAmount: 9000
+                        currencyCode: USD
+                    - balanceType: ACCOUNT_LEVEL_RESERVE
+                      amount:
+                        currencyAmount: -2000
+                        currencyCode: USD
+                nextToken: jehgri34yo7jr9e8f984tr9i4o
+            - request:
+                parameters:
+                  marketplaceIds:
+                    value:
+                    - AXXXXXXXXXER
+                  balanceType:
+                    value: TOTAL
+                  asOfDate:
+                    value: 2025-01-12
+              response:
+                balances:
+                - partnerMetadata:
+                    partnerId: XXXXXXXXXXXXXX
+                    accountType: Standard Orders
+                    marketplaceId: AXXXXXXXXXER
+                  balanceType: TOTAL
+                  amount:
+                    currencyAmount: 15000
+                    currencyCode: USD
+                  asOfDate: 2025-01-12
+                  balances:
+                  - balanceType: AVAILABLE
+                    amount:
+                      currencyAmount: 8000
+                      currencyCode: USD
+                  - balanceType: RESERVED
+                    amount:
+                      currencyAmount: 7000
+                      currencyCode: USD
+                    balances:
+                    - balanceType: DEFERRED
+                      amount:
+                        currencyAmount: 9000
+                        currencyCode: USD
+                    - balanceType: ACCOUNT_LEVEL_RESERVE
+                      amount:
+                        currencyAmount: -2000
+                        currencyCode: USD
+                nextToken: jehgri34yo7jr9e8f984tr9i4o
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  marketplaceIds:
+                    value:
+                    - INVALID_MARKETPLACE_ID
+              response:
+                errors:
+                - code: InvalidInput
+                  message: Invalid input
+                  details: Invalid input
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+  /finances/2024-06-19/summary:
+    get:
+      description: |-
+        Retrieve the financial summary for the specified time period or settlement period.
+
+        **Usage Plan:**
+
+        | Rate (requests per second) | Burst |
+        | ---- | ---- |
+        | 0.5 | 10 |
+
+        The `x-amzn-RateLimit-Limit` response header returns the usage plan rate limits that apply to the operation, when available. The preceding table indicates the default rate and burst values for this operation. Selling partners whose business demands require higher throughput may have higher rate and burst values than those shown here. For more information, refer to [Usage Plans and Rate Limits in the Selling Partner API](https://developer-docs.amazon.com/sp-api/docs/usage-plans-and-rate-limits-in-the-sp-api).
+      operationId: listSummary
+      parameters:
+      - description: "The marketplaces from which to retrieve summaries. If omitted,\
+          \ summaries from all applicable marketplaces may be returned. To find the\
+          \ marketplace ID for a region, refer to [Marketplace IDs](https://developer-docs.amazon.com/sp-api/docs/marketplace-ids)."
+        example:
+        - AXXXXXXXXXER
+        explode: false
+        in: query
+        name: marketplaceIds
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: The type of account to include in the response.
+        example: Standard Orders
+        in: query
+        name: accountType
+        schema:
+          type: string
+      - description: "The name of the `relatedIdentifier`. The only possible value\
+          \ is `SETTLEMENT_ID`, the settlement ID associated with the summary."
+        example: SETTLEMENT_ID
+        in: query
+        name: relatedIdentifierName
+        schema:
+          type: string
+      - description: The value of the `relatedIdentifier`.
+        example: "8129762527551"
+        in: query
+        name: relatedIdentifierValue
+        schema:
+          type: string
+      - description: "The start of the period for which to retrieve summaries. When\
+          \ provided, the response will only include summaries with transactions that\
+          \ occurred on or after the specified date. The value must be formatted in\
+          \ [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601) date\
+          \ format."
+        example: 2025-01-12
+        in: query
+        name: periodStart
+        schema:
+          format: date
+          type: string
+      - description: "The end of the period for which to retrieve summaries. When\
+          \ provided, the response will only include summaries with transactions that\
+          \ occurred on or before the specified date. The value must be formatted\
+          \ in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601)\
+          \ date format."
+        example: 2025-01-12
+        in: query
+        name: periodEnd
+        schema:
+          format: date
+          type: string
+      - description: "A token that you use to retrieve subsequent pages of results.\
+          \ When there are more results available, the response will include a `nextToken`\
+          \ value. To get the next page of results, call the operation with this token\
+          \ and include the same arguments as the call that produced the token. Repeat\
+          \ this process until the `nextToken` value is null to retrieve all results."
+        example: jehgri34yo7jr9e8f984tr9i4o
+        in: query
+        name: nextToken
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SummaryResponse'
+          description: Success.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  marketplaceIds:
+                    value:
+                    - AXXXXXXXXXER
+                  periodStart:
+                    value: 2025-01-12
+                  periodEnd:
+                    value: 2025-01-12
+              response:
+                summaries:
+                - partnerMetadata:
+                    partnerId: XXXXXXXXXXXXXX
+                    accountType: Standard Orders
+                    marketplaceId: AXXXXXXXXXER
+                  periodStart: 2025-01-12
+                  periodEnd: 2025-01-12
+                  netProceeds:
+                    currencyAmount: 8000
+                    currencyCode: USD
+                  breakdowns:
+                  - breakdownType: Sales
+                    breakdownAmount:
+                      currencyAmount: 8000
+                      currencyCode: USD
+                    breakdowns:
+                    - breakdownType: Product Charges
+                      breakdownAmount:
+                        currencyAmount: 9000
+                        currencyCode: USD
+                      breakdowns: []
+                  - breakdownType: Expenses
+                    breakdownAmount:
+                      currencyAmount: -1000
+                      currencyCode: USD
+                    breakdowns:
+                    - breakdownType: FBA fees
+                      breakdownAmount:
+                        currencyAmount: -1000
+                        currencyCode: USD
+                      breakdowns: []
+                nextToken: jehgri34yo7jr9e8f984tr9i4o
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Request has missing or invalid parameters and cannot be parsed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+          x-amzn-api-sandbox:
+            static:
+            - request:
+                parameters:
+                  marketplaceIds:
+                    value:
+                    - INVALID_MARKETPLACE_ID
+              response:
+                errors:
+                - code: InvalidInput
+                  message: Invalid input
+                  details: Invalid input
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: "Indicates that access to the resource is forbidden. Possible\
+            \ reasons include Access Denied, Unauthorized, Expired Token, or Invalid\
+            \ Signature."
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The resource specified does not exist.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+            x-amzn-RateLimit-Limit:
+              description: Your rate limit (requests per second) for this operation.
+              schema:
+                type: string
+        "413":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request size exceeded the maximum accepted size.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "415":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The request payload is in an unsupported format.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: The frequency of requests was greater than allowed.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: An unexpected condition occurred that prevented the server
+            from fulfilling the request.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorList'
+          description: Temporary overloading or maintenance of the server.
+          headers:
+            x-amzn-RequestId:
+              description: Unique request reference identifier.
+              schema:
+                type: string
+components:
+  schemas:
+    ListTransactionsResponse:
+      description: The response to the `listTransactions` operation.
+      example:
+        payload:
+          nextToken: nextToken
+          transactions:
+          - sellingPartnerMetadata:
+              sellingPartnerId: XXXXXXXXXXXXXX
+              accountType: PAYABLE
+              marketplaceId: ATVPDKIKX0DER
+            relatedIdentifiers:
+            - relatedIdentifierName: ORDER_ID
+              relatedIdentifierValue: "8129762527551"
+            transactionType: Shipment
+            transactionId: b1qD0oAliFkLiqRyGbmeT0DoS2Z2kHzi7TZ92z-vARI
+            transactionStatus: Released
+            description: Order Payment
+            postedDate: 2020-07-14T03:35:13.214Z
+            totalAmount:
+              currencyAmount: 10
+              currencyCode: USD
+            marketplaceDetails:
+              marketplaceId: ATVPDKIKX0DER
+              marketplaceName: Amazon.com
+            items:
+            - description: Item title
+              totalAmount:
+                currencyAmount: 10
+                currencyCode: USD
+              relatedIdentifiers:
+              - itemRelatedIdentifierName: ORDER_ADJUSTMENT_ITEM_ID
+                itemRelatedIdentifierValue: 81297625-121-27551
+              breakdowns:
+              - breakdownType: Product Charges
+                breakdownAmount:
+                  currencyAmount: 10
+                  currencyCode: USD
+                breakdowns:
+                - breakdownType: Principle
+                  breakdownAmount:
+                    currencyAmount: 10
+                    currencyCode: USD
+                  breakdowns: []
+              contexts:
+              - contextType: ProductContext
+                asin: B07FGXZQZ1
+                sku: sku-12
+                quantityShipped: 1
+                fulfillmentNetwork: MFN
+            breakdowns:
+              breakdowns:
+              - breakdownType: Sales
+                breakdownAmount:
+                  currencyAmount: 10
+                  currencyCode: USD
+                breakdowns:
+                - breakdownType: Product Charges
+                  breakdownAmount:
+                    currencyAmount: 10
+                    currencyCode: USD
+                  breakdowns: []
+            contexts:
+            - contextType: AmazonPayContext
+              storeName: Store 1
+              orderType: Order Type
+              channel: MFN
+          - sellingPartnerMetadata:
+              sellingPartnerId: XXXXXXXXXXXXXX
+              accountType: PAYABLE
+              marketplaceId: ATVPDKIKX0DER
+            relatedIdentifiers:
+            - relatedIdentifierName: ORDER_ID
+              relatedIdentifierValue: "8129762527551"
+            transactionType: Shipment
+            transactionId: b1qD0oAliFkLiqRyGbmeT0DoS2Z2kHzi7TZ92z-vARI
+            transactionStatus: Released
+            description: Order Payment
+            postedDate: 2020-07-14T03:35:13.214Z
+            totalAmount:
+              currencyAmount: 10
+              currencyCode: USD
+            marketplaceDetails:
+              marketplaceId: ATVPDKIKX0DER
+              marketplaceName: Amazon.com
+            items:
+            - description: Item title
+              totalAmount:
+                currencyAmount: 10
+                currencyCode: USD
+              relatedIdentifiers:
+              - itemRelatedIdentifierName: ORDER_ADJUSTMENT_ITEM_ID
+                itemRelatedIdentifierValue: 81297625-121-27551
+              breakdowns:
+              - breakdownType: Product Charges
+                breakdownAmount:
+                  currencyAmount: 10
+                  currencyCode: USD
+                breakdowns:
+                - breakdownType: Principle
+                  breakdownAmount:
+                    currencyAmount: 10
+                    currencyCode: USD
+                  breakdowns: []
+              contexts:
+              - contextType: ProductContext
+                asin: B07FGXZQZ1
+                sku: sku-12
+                quantityShipped: 1
+                fulfillmentNetwork: MFN
+            breakdowns:
+              breakdowns:
+              - breakdownType: Sales
+                breakdownAmount:
+                  currencyAmount: 10
+                  currencyCode: USD
+                breakdowns:
+                - breakdownType: Product Charges
+                  breakdownAmount:
+                    currencyAmount: 10
+                    currencyCode: USD
+                  breakdowns: []
+            contexts:
+            - contextType: AmazonPayContext
+              storeName: Store 1
+              orderType: Order Type
+              channel: MFN
+      properties:
+        payload:
+          $ref: '#/components/schemas/TransactionsPayload'
+      type: object
+    TransactionsPayload:
+      description: The payload for the `listTransactions` operation.
+      example:
+        nextToken: nextToken
+        transactions:
+        - sellingPartnerMetadata:
+            sellingPartnerId: XXXXXXXXXXXXXX
+            accountType: PAYABLE
+            marketplaceId: ATVPDKIKX0DER
+          relatedIdentifiers:
+          - relatedIdentifierName: ORDER_ID
+            relatedIdentifierValue: "8129762527551"
+          transactionType: Shipment
+          transactionId: b1qD0oAliFkLiqRyGbmeT0DoS2Z2kHzi7TZ92z-vARI
+          transactionStatus: Released
+          description: Order Payment
+          postedDate: 2020-07-14T03:35:13.214Z
+          totalAmount:
+            currencyAmount: 10
+            currencyCode: USD
+          marketplaceDetails:
+            marketplaceId: ATVPDKIKX0DER
+            marketplaceName: Amazon.com
+          items:
+          - description: Item title
+            totalAmount:
+              currencyAmount: 10
+              currencyCode: USD
+            relatedIdentifiers:
+            - itemRelatedIdentifierName: ORDER_ADJUSTMENT_ITEM_ID
+              itemRelatedIdentifierValue: 81297625-121-27551
+            breakdowns:
+            - breakdownType: Product Charges
+              breakdownAmount:
+                currencyAmount: 10
+                currencyCode: USD
+              breakdowns:
+              - breakdownType: Principle
+                breakdownAmount:
+                  currencyAmount: 10
+                  currencyCode: USD
+                breakdowns: []
+            contexts:
+            - contextType: ProductContext
+              asin: B07FGXZQZ1
+              sku: sku-12
+              quantityShipped: 1
+              fulfillmentNetwork: MFN
+          breakdowns:
+            breakdowns:
+            - breakdownType: Sales
+              breakdownAmount:
+                currencyAmount: 10
+                currencyCode: USD
+              breakdowns:
+              - breakdownType: Product Charges
+                breakdownAmount:
+                  currencyAmount: 10
+                  currencyCode: USD
+                breakdowns: []
+          contexts:
+          - contextType: AmazonPayContext
+            storeName: Store 1
+            orderType: Order Type
+            channel: MFN
+        - sellingPartnerMetadata:
+            sellingPartnerId: XXXXXXXXXXXXXX
+            accountType: PAYABLE
+            marketplaceId: ATVPDKIKX0DER
+          relatedIdentifiers:
+          - relatedIdentifierName: ORDER_ID
+            relatedIdentifierValue: "8129762527551"
+          transactionType: Shipment
+          transactionId: b1qD0oAliFkLiqRyGbmeT0DoS2Z2kHzi7TZ92z-vARI
+          transactionStatus: Released
+          description: Order Payment
+          postedDate: 2020-07-14T03:35:13.214Z
+          totalAmount:
+            currencyAmount: 10
+            currencyCode: USD
+          marketplaceDetails:
+            marketplaceId: ATVPDKIKX0DER
+            marketplaceName: Amazon.com
+          items:
+          - description: Item title
+            totalAmount:
+              currencyAmount: 10
+              currencyCode: USD
+            relatedIdentifiers:
+            - itemRelatedIdentifierName: ORDER_ADJUSTMENT_ITEM_ID
+              itemRelatedIdentifierValue: 81297625-121-27551
+            breakdowns:
+            - breakdownType: Product Charges
+              breakdownAmount:
+                currencyAmount: 10
+                currencyCode: USD
+              breakdowns:
+              - breakdownType: Principle
+                breakdownAmount:
+                  currencyAmount: 10
+                  currencyCode: USD
+                breakdowns: []
+            contexts:
+            - contextType: ProductContext
+              asin: B07FGXZQZ1
+              sku: sku-12
+              quantityShipped: 1
+              fulfillmentNetwork: MFN
+          breakdowns:
+            breakdowns:
+            - breakdownType: Sales
+              breakdownAmount:
+                currencyAmount: 10
+                currencyCode: USD
+              breakdowns:
+              - breakdownType: Product Charges
+                breakdownAmount:
+                  currencyAmount: 10
+                  currencyCode: USD
+                breakdowns: []
+          contexts:
+          - contextType: AmazonPayContext
+            storeName: Store 1
+            orderType: Order Type
+            channel: MFN
+      properties:
+        nextToken:
+          description: "The response includes `nextToken` when the number of results\
+            \ exceeds the specified `pageSize` value. To get the next page of results,\
+            \ call the operation with this token and include the same arguments as\
+            \ the call that produced the token. To get a complete list, call this\
+            \ operation until `nextToken` is null. Note that this operation can return\
+            \ empty pages."
+          type: string
+        transactions:
+          description: A list of transactions within the specified time period.
+          items:
+            $ref: '#/components/schemas/Transaction'
+          type: array
+      type: object
+    Transactions:
+      description: A list of transactions within the specified time period.
+      items:
+        $ref: '#/components/schemas/Transaction'
+      type: array
+    Transaction:
+      description: All the information related to a transaction.
+      example:
+        sellingPartnerMetadata:
+          sellingPartnerId: XXXXXXXXXXXXXX
+          accountType: PAYABLE
+          marketplaceId: ATVPDKIKX0DER
+        relatedIdentifiers:
+        - relatedIdentifierName: ORDER_ID
+          relatedIdentifierValue: "8129762527551"
+        transactionType: Shipment
+        transactionId: b1qD0oAliFkLiqRyGbmeT0DoS2Z2kHzi7TZ92z-vARI
+        transactionStatus: Released
+        description: Order Payment
+        postedDate: 2020-07-14T03:35:13.214Z
+        totalAmount:
+          currencyAmount: 10
+          currencyCode: USD
+        marketplaceDetails:
+          marketplaceId: ATVPDKIKX0DER
+          marketplaceName: Amazon.com
+        items:
+        - description: Item title
+          totalAmount:
+            currencyAmount: 10
+            currencyCode: USD
+          relatedIdentifiers:
+          - itemRelatedIdentifierName: ORDER_ADJUSTMENT_ITEM_ID
+            itemRelatedIdentifierValue: 81297625-121-27551
+          breakdowns:
+          - breakdownType: Product Charges
+            breakdownAmount:
+              currencyAmount: 10
+              currencyCode: USD
+            breakdowns:
+            - breakdownType: Principle
+              breakdownAmount:
+                currencyAmount: 10
+                currencyCode: USD
+              breakdowns: []
+          contexts:
+          - contextType: ProductContext
+            asin: B07FGXZQZ1
+            sku: sku-12
+            quantityShipped: 1
+            fulfillmentNetwork: MFN
+        breakdowns:
+          breakdowns:
+          - breakdownType: Sales
+            breakdownAmount:
+              currencyAmount: 10
+              currencyCode: USD
+            breakdowns:
+            - breakdownType: Product Charges
+              breakdownAmount:
+                currencyAmount: 10
+                currencyCode: USD
+              breakdowns: []
+        contexts:
+        - contextType: AmazonPayContext
+          storeName: Store 1
+          orderType: Order Type
+          channel: MFN
+      properties:
+        sellingPartnerMetadata:
+          $ref: '#/components/schemas/SellingPartnerMetadata'
+        relatedIdentifiers:
+          description: Related business identifiers of the transaction.
+          items:
+            $ref: '#/components/schemas/RelatedIdentifier'
+          type: array
+        transactionType:
+          description: |-
+            The type of transaction.
+
+            **Possible value:** `Shipment`
+          type: string
+        transactionId:
+          description: The unique identifier of the transaction.
+          type: string
+        transactionStatus:
+          description: |-
+            The status of the transaction.
+
+            **Possible values:**
+
+            * `DEFERRED`: the transaction is currently deferred.
+            * `RELEASED`: the transaction is currently released.
+            * `DEFERRED_RELEASED`: the transaction was deferred in the past, but is now released. The status of a deferred transaction is updated to `DEFERRED_RELEASED` when the transaction is released.
+          type: string
+        description:
+          description: |-
+            Describes the reasons for the transaction.
+
+            **Example:** `Order Payment`, `Refund Order`
+          type: string
+        postedDate:
+          description: "A date in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601)\
+            \ date-time format."
+          format: date-time
+          type: string
+        totalAmount:
+          $ref: '#/components/schemas/Currency'
+        marketplaceDetails:
+          $ref: '#/components/schemas/MarketplaceDetails'
+        items:
+          description: A list of items in the transaction.
+          items:
+            $ref: '#/components/schemas/Item'
+          type: array
+        contexts:
+          description: A list of additional information about the item.
+          items:
+            $ref: '#/components/schemas/Context'
+          type: array
+        breakdowns:
+          description: A list of breakdowns that detail how the total amount is calculated
+            for the transaction.
+          items:
+            $ref: '#/components/schemas/Breakdown'
+          type: array
+      type: object
+    BigDecimal:
+      description: A signed decimal number.
+      type: number
+    Currency:
+      description: A currency type and amount.
+      properties:
+        currencyCode:
+          description: The three-digit currency code in ISO 4217 format.
+          type: string
+        currencyAmount:
+          description: A signed decimal number.
+          type: number
+      type: object
+    SellingPartnerMetadata:
+      description: Metadata that describes the seller.
+      properties:
+        sellingPartnerId:
+          description: The unique seller identifier.
+          type: string
+        accountType:
+          description: The type of account in the transaction.
+          type: string
+        marketplaceId:
+          description: "The identifier of the marketplace where the transaction occurred.\
+            \ The marketplace ID is the globally unique identifier of a marketplace.\
+            \ To find the ID for a marketplace, refer to [Marketplace IDs](https://developer-docs.amazon.com/sp-api/docs/marketplace-ids)."
+          type: string
+      type: object
+    RelatedIdentifier:
+      description: Related business identifier of the transaction.
+      properties:
+        relatedIdentifierName:
+          description: An enumerated set of related business identifier names.
+          enum:
+          - ORDER_ID
+          - SHIPMENT_ID
+          - FINANCIAL_EVENT_GROUP_ID
+          - REFUND_ID
+          - INVOICE_ID
+          - DISBURSEMENT_ID
+          - TRANSFER_ID
+          - DEFERRED_TRANSACTION_ID
+          - RELEASE_TRANSACTION_ID
+          - SETTLEMENT_ID
+          type: string
+          x-docgen-enum-table-extension:
+          - value: ORDER_ID
+            description: The `OrderId` that is associated with the transaction.
+          - value: SHIPMENT_ID
+            description: The `ShipmentId` that is associated with the transaction.
+          - value: FINANCIAL_EVENT_GROUP_ID
+            description: The identifier that is associated with the transaction's
+              financial event group.
+          - value: SETTLEMENT_ID
+            description: The identifier that is associated with the transaction's
+              settlement group.
+          - value: REFUND_ID
+            description: The `RefundId` that is associated with the transaction.
+          - value: INVOICE_ID
+            description: The `InvoiceId` that is associated with the transaction.
+          - value: DISBURSEMENT_ID
+            description: The disbursement ID for Amazon's bank transfer.
+          - value: TRANSFER_ID
+            description: The `TransferId` associated with the transaction.
+          - value: DEFERRED_TRANSACTION_ID
+            description: The transaction ID for the related deferred transaction
+          - value: RELEASE_TRANSACTION_ID
+            description: The transaction ID for the related released transaction
+        relatedIdentifierValue:
+          description: Corresponding value of `RelatedIdentifierName`.
+          type: string
+      type: object
+    RelatedIdentifiers:
+      description: Related business identifiers of the transaction.
+      items:
+        $ref: '#/components/schemas/RelatedIdentifier'
+      type: array
+    Date:
+      description: "A date in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601)\
+        \ date-time format."
+      format: date-time
+      type: string
+    MarketplaceDetails:
+      description: Information about the marketplace where the transaction occurred.
+      example:
+        marketplaceId: ATVPDKIKX0DER
+        marketplaceName: Amazon.com
+      properties:
+        marketplaceId:
+          description: "The identifier of the marketplace where the transaction occurred.\
+            \ The marketplace ID is the globally unique identifier of a marketplace.\
+            \ To find the ID for a marketplace, refer to [Marketplace IDs](https://developer-docs.amazon.com/sp-api/docs/marketplace-ids)."
+          type: string
+        marketplaceName:
+          description: "The name of the marketplace where the transaction occurred.\
+            \ For example: `Amazon.com`,`Amazon.in`"
+          type: string
+      type: object
+    Items:
+      description: A list of items in the transaction.
+      items:
+        $ref: '#/components/schemas/Item'
+      type: array
+    Item:
+      description: Additional information about an item in a transaction.
+      properties:
+        description:
+          description: A description of the items in a transaction.
+          type: string
+        relatedIdentifiers:
+          description: Related business identifiers of the item in the transaction.
+          items:
+            $ref: '#/components/schemas/ItemRelatedIdentifier'
+          type: array
+        totalAmount:
+          $ref: '#/components/schemas/Currency'
+        breakdowns:
+          description: A list of breakdowns that detail how the total amount is calculated
+            for the transaction.
+          items:
+            $ref: '#/components/schemas/Breakdown'
+          type: array
+        contexts:
+          description: A list of additional information about the item.
+          items:
+            $ref: '#/components/schemas/Context'
+          type: array
+      type: object
+    ItemRelatedIdentifier:
+      description: Related business identifiers of the item.
+      example:
+        itemRelatedIdentifierName: ORDER_ADJUSTMENT_ITEM_ID
+        itemRelatedIdentifierValue: OAI-123456789
+      properties:
+        itemRelatedIdentifierName:
+          description: Enumerated set of related item identifier names for the item.
+          enum:
+          - ORDER_ADJUSTMENT_ITEM_ID
+          - COUPON_ID
+          - REMOVAL_SHIPMENT_ITEM_ID
+          - TRANSACTION_ID
+          type: string
+          x-docgen-enum-table-extension:
+          - value: ORDER_ADJUSTMENT_ITEM_ID
+            description: "An Amazon-defined order adjustment identifier defined for\
+              \ refunds, guarantee claims, and chargeback events."
+          - value: COUPON_ID
+            description: An identifier for a coupon that is applied to a transaction.
+          - value: REMOVAL_SHIPMENT_ITEM_ID
+            description: An identifier for an item in a removal shipment.
+          - value: TRANSACTION_ID
+            description: The transaction ID of the item.
+        itemRelatedIdentifierValue:
+          description: Corresponding value to `ItemRelatedIdentifierName`.
+          type: string
+      type: object
+    ItemRelatedIdentifiers:
+      description: Related business identifiers of the item in the transaction.
+      items:
+        $ref: '#/components/schemas/ItemRelatedIdentifier'
+      type: array
+    Breakdowns:
+      description: A list of breakdowns that detail how the total amount is calculated
+        for the transaction.
+      example:
+      - breakdownType: Sales
+        breakdownAmount:
+          currencyAmount: 10
+          currencyCode: USD
+        breakdowns:
+        - breakdownType: Product Charges
+          breakdownAmount:
+            currencyAmount: 10
+            currencyCode: USD
+          breakdowns: []
+      items:
+        $ref: '#/components/schemas/Breakdown'
+      type: array
+    Breakdown:
+      description: Details about the movement of money in the financial transaction.
+      properties:
+        breakdownType:
+          description: The type of charge.
+          type: string
+        breakdownAmount:
+          $ref: '#/components/schemas/Currency'
+        breakdowns:
+          description: A list of breakdowns that detail how the total amount is calculated
+            for the transaction.
+          items:
+            $ref: '#/components/schemas/Breakdown'
+          type: array
+      type: object
+    Contexts:
+      description: A list of additional information about the item.
+      items:
+        $ref: '#/components/schemas/Context'
+      type: array
+    Context:
+      allOf:
+      - properties:
+          contextType:
+            description: The type of context.
+            type: string
+        required:
+        - contextType
+        type: object
+      - $ref: '#/components/schemas/AmazonPayContext'
+      - $ref: '#/components/schemas/ProductContext'
+      - $ref: '#/components/schemas/PaymentsContext'
+      - $ref: '#/components/schemas/DeferredContext'
+      - $ref: '#/components/schemas/BusinessContext'
+      - $ref: '#/components/schemas/TimeRangeContext'
+      description: Additional information about the item.
+    ProductContext:
+      description: Additional information related to the product.
+      example:
+        asin: B07FGXZQZ1
+        sku: sku-12
+        quantityShipped: 1
+        fulfillmentNetwork: MFN
+      properties:
+        asin:
+          description: The Amazon Standard Identification Number (ASIN) of the item.
+          type: string
+        sku:
+          description: The Stock Keeping Unit (SKU) of the item.
+          type: string
+        quantityShipped:
+          description: The quantity of the item shipped.
+          format: int32
+          type: integer
+        fulfillmentNetwork:
+          description: The fulfillment network of the item.
+          type: string
+      type: object
+    AmazonPayContext:
+      description: Additional information related to Amazon Pay.
+      example:
+        storeName: Store 1
+        orderType: Order Type
+        channel: MFN
+      properties:
+        storeName:
+          description: The name of the store that is related to the transaction.
+          type: string
+        orderType:
+          description: The order type of the transaction.
+          type: string
+        channel:
+          description: "The channel of the transaction. For example: `MFN`."
+          type: string
+      type: object
+    PaymentsContext:
+      description: Additional information related to payments-related transactions.
+      example:
+        paymentType: Debit Card
+        paymentMethod: BANK
+        paymentReference: XXXXX123
+        paymentDate: 2020-07-14T03:35:13.214Z
+      properties:
+        paymentType:
+          description: The type of payment.
+          type: string
+        paymentMethod:
+          description: The method of payment.
+          type: string
+        paymentReference:
+          description: The reference number of the payment.
+          type: string
+        paymentDate:
+          description: "A date in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601)\
+            \ date-time format."
+          format: date-time
+          type: string
+      type: object
+    DeferredContext:
+      description: Additional information related to deferred transactions.
+      example:
+        deferralReason: B2B
+        maturityDate: 2024-07-14T00:00:00Z
+      properties:
+        deferralReason:
+          description: |-
+            The deferral policy applied to the transaction.
+
+            **Examples:** `B2B` (invoiced orders), `DD7` (delivery date policy)
+          type: string
+        maturityDate:
+          description: "A date in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601)\
+            \ date-time format."
+          format: date-time
+          type: string
+      type: object
+    BusinessContext:
+      description: Information about the line of business associated with a transaction.
+      example:
+        storeName: AMAZON_HAUL
+      properties:
+        storeName:
+          description: The store name associated with the transaction.
+          enum:
+          - AMAZON_HAUL
+          type: string
+      type: object
+    TimeRangeContext:
+      description: Additional information that is related to the time range of the
+        transaction.
+      example:
+        startTime: 2020-07-14T03:35:13.214Z
+        endTime: 2020-07-14T03:35:13.214Z
+      properties:
+        startTime:
+          description: "A date in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601)\
+            \ date-time format."
+          format: date-time
+          type: string
+        endTime:
+          description: "A date in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601)\
+            \ date-time format."
+          format: date-time
+          type: string
+      type: object
+    ListBalancesResponse:
+      description: The response to the `listBalances` operation.
+      example:
+        balances:
+        - partnerMetadata:
+            partnerId: XXXXXXXXXXXXXX
+            accountType: Standard Orders
+            marketplaceId: AXXXXXXXXXER
+          balanceType: TOTAL
+          amount:
+            currencyAmount: 15000
+            currencyCode: USD
+          balances:
+          - balanceType: AVAILABLE
+            amount:
+              currencyAmount: 8000
+              currencyCode: USD
+          - balanceType: RESERVED
+            amount:
+              currencyAmount: 7000
+              currencyCode: USD
+            balances:
+            - balanceType: DEFERRED
+              amount:
+                currencyAmount: 9000
+                currencyCode: USD
+            - balanceType: ACCOUNT_LEVEL_RESERVE
+              amount:
+                currencyAmount: -2000
+                currencyCode: USD
+          lastUpdatedTime: 2025-01-12T10:30:00+09:00
+        - partnerMetadata:
+            partnerId: XXXXXXXXXXXXXX
+            accountType: Standard Orders
+            marketplaceId: AXXXXXXXXXER
+          balanceType: TOTAL
+          amount:
+            currencyAmount: 15000
+            currencyCode: USD
+          balances:
+          - balanceType: AVAILABLE
+            amount:
+              currencyAmount: 8000
+              currencyCode: USD
+          - balanceType: RESERVED
+            amount:
+              currencyAmount: 7000
+              currencyCode: USD
+            balances:
+            - balanceType: DEFERRED
+              amount:
+                currencyAmount: 9000
+                currencyCode: USD
+            - balanceType: ACCOUNT_LEVEL_RESERVE
+              amount:
+                currencyAmount: -2000
+                currencyCode: USD
+          lastUpdatedTime: 2025-01-12T10:30:00+09:00
+        nextToken: nextToken
+      properties:
+        balances:
+          description: A list of balances.
+          items:
+            $ref: '#/components/schemas/Balance'
+          type: array
+        nextToken:
+          description: "A token to retrieve the next page of results. If null, no\
+            \ more results are available."
+          type: string
+      type: object
+    Balances:
+      description: A list of balances.
+      items:
+        $ref: '#/components/schemas/Balance'
+      type: array
+    Balance:
+      description: All information relevant to a balance.
+      example:
+        partnerMetadata:
+          partnerId: XXXXXXXXXXXXXX
+          accountType: Standard Orders
+          marketplaceId: AXXXXXXXXXER
+        balanceType: TOTAL
+        amount:
+          currencyAmount: 15000
+          currencyCode: USD
+        balances:
+        - balanceType: AVAILABLE
+          amount:
+            currencyAmount: 8000
+            currencyCode: USD
+        - balanceType: RESERVED
+          amount:
+            currencyAmount: 7000
+            currencyCode: USD
+          balances:
+          - balanceType: DEFERRED
+            amount:
+              currencyAmount: 9000
+              currencyCode: USD
+          - balanceType: ACCOUNT_LEVEL_RESERVE
+            amount:
+              currencyAmount: -2000
+              currencyCode: USD
+        lastUpdatedTime: 2025-01-12T10:30:00+09:00
+      properties:
+        partnerMetadata:
+          $ref: '#/components/schemas/PartnerMetadata'
+        balanceType:
+          description: The type of balance.
+          enum:
+          - AVAILABLE
+          - RESERVED
+          - ACCOUNT_LEVEL_RESERVE
+          - DEFERRED
+          - TOTAL
+          type: string
+          x-docgen-enum-table-extension:
+          - value: AVAILABLE
+            description: The total balance currently available in the account.
+          - value: DEFERRED
+            description: The deferred balance is a portion of sales revenue that is
+              temporarily withheld before being transferred to the available balance
+              after a specified period.
+          - value: ACCOUNT_LEVEL_RESERVE
+            description: "Balance reserved as a safety measure to cover potential\
+              \ liabilities such as refunds, chargebacks, or other claims. Based on\
+              \ sales volume, product category, and account history. "
+          - value: RESERVED
+            description: The reserved balance is sum of Deferred and Account Level
+              Reserved.
+          - value: TOTAL
+            description: Overall sum of balances including available and reserved.
+        amount:
+          $ref: '#/components/schemas/Currency'
+        balances:
+          description: A list of balances that comprise this balance.
+          items:
+            $ref: '#/components/schemas/Balance'
+          type: array
+        asOfDate:
+          description: "A date in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601)\
+            \ date-time format."
+          format: date-time
+          type: string
+        lastUpdatedTime:
+          description: "The date and time when the balance was last updated, in [ISO\
+            \ 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601) date-time\
+            \ format. The value is in the marketplace's local time zone. This field\
+            \ is present for point-in-time balance queries (when no `asOfDate` query\
+            \ parameter is provided). Null for ending balance queries."
+          format: date-time
+          type: string
+      type: object
+    PartnerMetadata:
+      description: Metadata that describes the seller.
+      properties:
+        partnerId:
+          description: The unique seller identifier.
+          type: string
+        accountType:
+          description: The type of account.
+          type: string
+        marketplaceId:
+          description: "The identifier of the marketplace where the transaction occurred.\
+            \ The marketplace ID is the globally unique identifier of a marketplace.\
+            \ To find the ID for a marketplace, refer to [Marketplace IDs](https://developer-docs.amazon.com/sp-api/docs/marketplace-ids)."
+          type: string
+      type: object
+    SummaryResponse:
+      description: The response to the `listSummary` operation.
+      example:
+        nextToken: nextToken
+        summaries:
+        - partnerMetadata:
+            partnerId: XXXXXXXXXXXXXX
+            accountType: Standard Orders
+            marketplaceId: AXXXXXXXXXER
+          netProceeds:
+            currencyAmount: 17000
+            currencyCode: USD
+          relatedIdentifiers:
+          - relatedIdentifierName: SETTLEMENT_ID
+            relatedIdentifierValue: "123456789"
+          breakdowns:
+          - breakdownType: Sales
+            amount: 20000
+            breakdowns: []
+          - breakdownType: Expenses
+            amount: -1000
+            breakdowns: []
+          - breakdownType: Refunds
+            amount: -2000
+            breakdowns: []
+          periodStart: 2026-01-01T00:00:00Z
+          periodEnd: 2026-01-31T23:59:59Z
+        - partnerMetadata:
+            partnerId: XXXXXXXXXXXXXX
+            accountType: Standard Orders
+            marketplaceId: AXXXXXXXXXER
+          netProceeds:
+            currencyAmount: 17000
+            currencyCode: USD
+          relatedIdentifiers:
+          - relatedIdentifierName: SETTLEMENT_ID
+            relatedIdentifierValue: "123456789"
+          breakdowns:
+          - breakdownType: Sales
+            amount: 20000
+            breakdowns: []
+          - breakdownType: Expenses
+            amount: -1000
+            breakdowns: []
+          - breakdownType: Refunds
+            amount: -2000
+            breakdowns: []
+          periodStart: 2026-01-01T00:00:00Z
+          periodEnd: 2026-01-31T23:59:59Z
+      properties:
+        summaries:
+          description: A list of financial summaries.
+          items:
+            $ref: '#/components/schemas/Summary'
+          type: array
+        nextToken:
+          description: "A token to retrieve the next page of results. If null, no\
+            \ more results are available."
+          type: string
+      type: object
+    Summary:
+      description: Contains all information related to the financial summary.
+      example:
+        partnerMetadata:
+          partnerId: XXXXXXXXXXXXXX
+          accountType: Standard Orders
+          marketplaceId: AXXXXXXXXXER
+        netProceeds:
+          currencyAmount: 17000
+          currencyCode: USD
+        relatedIdentifiers:
+        - relatedIdentifierName: SETTLEMENT_ID
+          relatedIdentifierValue: "123456789"
+        breakdowns:
+        - breakdownType: Sales
+          amount: 20000
+          breakdowns: []
+        - breakdownType: Expenses
+          amount: -1000
+          breakdowns: []
+        - breakdownType: Refunds
+          amount: -2000
+          breakdowns: []
+        periodStart: 2026-01-01T00:00:00Z
+        periodEnd: 2026-01-31T23:59:59Z
+      properties:
+        partnerMetadata:
+          $ref: '#/components/schemas/PartnerMetadata'
+        netProceeds:
+          $ref: '#/components/schemas/Currency'
+        relatedIdentifiers:
+          description: Related business identifiers of the transaction.
+          items:
+            $ref: '#/components/schemas/RelatedIdentifier'
+          type: array
+        breakdowns:
+          description: A list of breakdowns that detail how the total amount is calculated
+            for the transaction.
+          example:
+          - breakdownType: Sales
+            breakdownAmount:
+              currencyAmount: 10
+              currencyCode: USD
+            breakdowns:
+            - breakdownType: Product Charges
+              breakdownAmount:
+                currencyAmount: 10
+                currencyCode: USD
+              breakdowns: []
+          items:
+            $ref: '#/components/schemas/Breakdown'
+          type: array
+        periodStart:
+          description: "A date in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601)\
+            \ date-time format."
+          format: date-time
+          type: string
+        periodEnd:
+          description: "A date in [ISO 8601](https://developer-docs.amazon.com/sp-api/docs/iso-8601)\
+            \ date-time format."
+          format: date-time
+          type: string
+      type: object
+    ErrorList:
+      description: A list of error responses returned when a request is unsuccessful.
+      example:
+        errors:
+        - code: code
+          details: details
+          message: message
+        - code: code
+          details: details
+          message: message
+      properties:
+        errors:
+          description: The error responses that are returned when the request is unsuccessful.
+          items:
+            $ref: '#/components/schemas/Error'
+          type: array
+      required:
+      - errors
+      type: object
+    Error:
+      description: An error response returned when the request is unsuccessful.
+      example:
+        code: code
+        details: details
+        message: message
+      properties:
+        code:
+          description: An error code that identifies the type of error that occurred.
+          type: string
+        message:
+          description: A message that describes the error condition.
+          type: string
+        details:
+          description: Additional details that can help the caller understand or fix
+            the issue.
+          type: string
+      required:
+      - code
+      - message
+      type: object
+x-original-swagger-version: "2.0"
